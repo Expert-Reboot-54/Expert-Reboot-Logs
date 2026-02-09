@@ -43,42 +43,126 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
             height: 0;
             overflow: hidden;
             z-index: 100;
-            background: rgba(212, 165, 116, 0.08);
-            transition: height 0.2s ease;
+            background: linear-gradient(180deg, rgba(212,165,116,0.12) 0%, transparent 100%);
+            transition: height 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
             pointer-events: none;
+            padding-bottom: 8px;
         }
 
         .ptr-indicator.active {
             transition: none;
         }
 
-        .ptr-indicator.refreshing .ptr-arrow {
-            animation: ptrSpin 0.8s linear infinite;
+        /* カップアニメーション */
+        .ptr-cup {
+            transition: transform 0.15s ease;
+            transform: translateY(-10px) scale(0.8);
+            opacity: 0.4;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
 
-        .ptr-arrow {
-            font-size: 1.4rem;
-            color: #d4a574;
-            transition: transform 0.2s ease;
+        .ptr-indicator.active .ptr-cup {
+            transition: none;
         }
 
-        .ptr-arrow.flipped {
-            transform: rotate(180deg);
+        .ptr-indicator.ready .ptr-cup {
+            animation: ptrBounce 0.4s ease;
         }
 
+        .ptr-indicator.refreshing .ptr-cup {
+            animation: ptrCupSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes ptrBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.1); }
+        }
+
+        @keyframes ptrCupSpin {
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-4px) rotate(5deg) scale(1.05); }
+            50% { transform: translateY(0) rotate(0deg) scale(1); }
+            75% { transform: translateY(-4px) rotate(-5deg) scale(1.05); }
+            100% { transform: translateY(0) rotate(0deg) scale(1); }
+        }
+
+        /* 水滴 */
+        .ptr-drops {
+            display: flex;
+            gap: 12px;
+            height: 16px;
+            margin-top: 2px;
+        }
+
+        .ptr-drop {
+            font-size: 0.6rem;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: all 0.2s ease;
+        }
+
+        .ptr-indicator.ready .ptr-drop,
+        .ptr-indicator.refreshing .ptr-drop {
+            opacity: 0.7;
+            animation: ptrDrip 0.8s ease-in-out infinite;
+        }
+
+        .ptr-drop:nth-child(1) { animation-delay: 0s; }
+        .ptr-drop:nth-child(2) { animation-delay: 0.25s; }
+        .ptr-drop:nth-child(3) { animation-delay: 0.5s; }
+
+        @keyframes ptrDrip {
+            0% { transform: translateY(-4px); opacity: 0.7; }
+            100% { transform: translateY(8px); opacity: 0; }
+        }
+
+        /* テキスト */
         .ptr-text {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #a08060;
-            margin-top: 0.2rem;
+            margin-top: 2px;
+            transition: color 0.2s ease;
+            letter-spacing: 0.5px;
         }
 
-        @keyframes ptrSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .ptr-indicator.ready .ptr-text {
+            color: #d4a574;
+        }
+
+        .ptr-indicator.refreshing .ptr-text {
+            color: #e8c9a0;
+        }
+
+        /* プログレスバー */
+        .ptr-progress {
+            width: 60px;
+            height: 3px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .ptr-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #d4a574, #e8c9a0);
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        .ptr-indicator.refreshing .ptr-progress-bar {
+            width: 100% !important;
+            animation: ptrProgressPulse 0.8s ease-in-out infinite;
+        }
+
+        @keyframes ptrProgressPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         /* ===== 背景のアイスカフェラテアイコン ===== */
@@ -639,8 +723,26 @@
 
     <!-- プルトゥリフレッシュ インジケーター -->
     <div class="ptr-indicator" id="ptrIndicator">
-        <span class="ptr-arrow" id="ptrArrow">↓</span>
+        <div class="ptr-cup" id="ptrCup">
+            <svg width="50" height="60" viewBox="0 0 50 60" fill="none">
+                <rect x="8" y="12" width="34" height="42" rx="4" fill="#f5e6d3" stroke="#d4a574" stroke-width="2"/>
+                <rect x="10" y="32" width="30" height="20" rx="3" fill="#c4956a" opacity="0.6"/>
+                <rect x="10" y="16" width="30" height="18" rx="3" fill="rgba(245,230,211,0.5)"/>
+                <ellipse cx="25" cy="13" rx="18" ry="4" fill="#f0d9b5" stroke="#d4a574" stroke-width="1.5"/>
+                <rect x="30" y="4" width="4" height="38" rx="2" fill="#c0392b" opacity="0.7"/>
+                <rect x="15" y="20" width="8" height="6" rx="2" fill="rgba(255,255,255,0.5)"/>
+                <rect x="25" y="24" width="7" height="5" rx="2" fill="rgba(255,255,255,0.4)"/>
+            </svg>
+        </div>
+        <div class="ptr-drops" id="ptrDrops">
+            <span class="ptr-drop">💧</span>
+            <span class="ptr-drop">💧</span>
+            <span class="ptr-drop">💧</span>
+        </div>
         <span class="ptr-text" id="ptrText">引っ張って更新</span>
+        <div class="ptr-progress" id="ptrProgress">
+            <div class="ptr-progress-bar" id="ptrProgressBar"></div>
+        </div>
     </div>
 
     <!-- メインコンテンツ -->
@@ -1083,9 +1185,11 @@
         // ===== プルトゥリフレッシュ =====
         (function() {
             const ptr = document.getElementById('ptrIndicator');
-            const ptrArrow = document.getElementById('ptrArrow');
+            const ptrCup = document.getElementById('ptrCup');
             const ptrTextEl = document.getElementById('ptrText');
-            const threshold = 80;
+            const ptrBar = document.getElementById('ptrProgressBar');
+            const maxH = 120;
+            const readyH = 60;
             let startY = 0;
             let pulling = false;
 
@@ -1094,22 +1198,31 @@
                     startY = e.touches[0].clientY;
                     pulling = true;
                     ptr.classList.add('active');
+                    ptr.classList.remove('ready', 'refreshing');
                 }
             }, { passive: true });
 
             document.addEventListener('touchmove', (e) => {
                 if (!pulling) return;
                 const dy = Math.max(0, e.touches[0].clientY - startY);
-                if (dy > 0) {
-                    const h = Math.min(dy * 0.5, 100);
-                    ptr.style.height = h + 'px';
-                    if (h >= threshold * 0.5) {
-                        ptrArrow.classList.add('flipped');
-                        ptrTextEl.textContent = '離して更新';
-                    } else {
-                        ptrArrow.classList.remove('flipped');
-                        ptrTextEl.textContent = '引っ張って更新';
-                    }
+                const h = Math.min(dy * 0.5, maxH);
+                ptr.style.height = h + 'px';
+
+                // 引っ張り具合に応じてカップをアニメーション
+                const progress = Math.min(h / readyH, 1);
+                const scale = 0.8 + progress * 0.3;
+                const opacity = 0.4 + progress * 0.6;
+                const moveY = -10 + progress * 10;
+                ptrCup.style.transform = `translateY(${moveY}px) scale(${scale})`;
+                ptrCup.style.opacity = opacity;
+                ptrBar.style.width = (progress * 100) + '%';
+
+                if (h >= readyH) {
+                    ptr.classList.add('ready');
+                    ptrTextEl.textContent = '☕ 離して更新';
+                } else {
+                    ptr.classList.remove('ready');
+                    ptrTextEl.textContent = '↓ 引っ張って更新';
                 }
             }, { passive: true });
 
@@ -1118,14 +1231,19 @@
                 pulling = false;
                 ptr.classList.remove('active');
                 const h = parseInt(ptr.style.height) || 0;
-                if (h >= threshold * 0.5) {
+
+                if (h >= readyH) {
+                    ptr.classList.remove('ready');
                     ptr.classList.add('refreshing');
-                    ptrArrow.classList.remove('flipped');
-                    ptrArrow.textContent = '⟳';
+                    ptrCup.style.transform = '';
+                    ptrCup.style.opacity = '1';
                     ptrTextEl.textContent = '更新中...';
-                    ptr.style.height = '60px';
-                    setTimeout(() => location.reload(), 600);
+                    ptr.style.height = '100px';
+                    setTimeout(() => location.reload(), 800);
                 } else {
+                    ptrCup.style.transform = '';
+                    ptrCup.style.opacity = '';
+                    ptrBar.style.width = '0%';
                     ptr.style.height = '0';
                 }
             }, { passive: true });
