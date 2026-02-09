@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Cafe Study Timer - 7:00〜9:00</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c1810">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CafeTimer">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #1a0e0a 0%, #2c1810 30%, #3d2317 60%, #1a0e0a 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            color: #f5e6d3;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        /* ===== 背景のアイスカフェラテアイコン ===== */
+        .bg-latte {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            opacity: 0.06;
+            pointer-events: none;
+            animation: latteFloat 12s ease-in-out infinite;
+        }
+
+        @keyframes latteFloat {
+            0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            50% { transform: translate(-50%, -52%) scale(1.03) rotate(1deg); }
+        }
+
+        /* 浮かぶコーヒー豆の背景装飾 */
+        .coffee-bean {
+            position: fixed;
+            font-size: 1.5rem;
+            opacity: 0.08;
+            pointer-events: none;
+            animation: beanDrift 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes beanDrift {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.08; }
+            90% { opacity: 0.08; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* 湯気アニメーション */
+        .steam-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .steam {
+            position: absolute;
+            width: 8px;
+            height: 80px;
+            background: linear-gradient(to top, rgba(255,255,255,0.04), transparent);
+            border-radius: 50%;
+            animation: steamRise 4s ease-out infinite;
+            filter: blur(6px);
+        }
+
+        .steam:nth-child(1) { left: -20px; animation-delay: 0s; }
+        .steam:nth-child(2) { left: 0px; animation-delay: 1.2s; }
+        .steam:nth-child(3) { left: 20px; animation-delay: 2.4s; }
+
+        @keyframes steamRise {
+            0% { transform: translateY(0) scaleX(1); opacity: 0.5; }
+            50% { transform: translateY(-60px) scaleX(2); opacity: 0.3; }
+            100% { transform: translateY(-120px) scaleX(3); opacity: 0; }
+        }
+
+        /* ===== メインコンテナ ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        /* ヘッダー */
+        .header-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .title {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            background: linear-gradient(135deg, #d4a574 0%, #e8c9a0 40%, #f0d9b5 70%, #c4956a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            color: #a08060;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* ===== タイマー表示 ===== */
+        .timer-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(212, 165, 116, 0.15);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            padding: 2.5rem 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.5s ease;
+        }
+
+        .timer-card.warning {
+            border-color: rgba(255, 160, 60, 0.4);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(255, 160, 60, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .current-time {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            color: #d4a574;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 1.2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .current-time-value {
+            font-weight: 600;
+            color: #e8c9a0;
+        }
+
+        .time-label {
+            font-size: 0.85rem;
+            color: #a08060;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.8rem;
+        }
+
+        .timer-adjust-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .adjust-btn {
+            background: none;
+            border: 1px solid rgba(212, 165, 116, 0.15);
+            color: #a08060;
+            font-size: 0.9rem;
+            width: 60px;
+            height: 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            opacity: 0.5;
+        }
+
+        .adjust-btn:hover {
+            opacity: 1;
+            background: rgba(212, 165, 116, 0.1);
+            border-color: rgba(212, 165, 116, 0.35);
+            color: #d4a574;
+        }
+
+        .adjust-btn:active {
+            transform: scale(0.92);
+            background: rgba(212, 165, 116, 0.18);
+        }
+
+        .adjust-btn.disabled {
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .adjust-btn.flash {
+            color: #e8c9a0;
+            border-color: rgba(212, 165, 116, 0.5);
+            background: rgba(212, 165, 116, 0.15);
+        }
+
+        .adjust-hint {
+            font-size: 0.7rem;
+            color: #605040;
+            letter-spacing: 0.5px;
+            margin-top: 0.3rem;
+            margin-bottom: 0.8rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .adjust-hint.hidden {
+            opacity: 0;
+        }
+
+        .timer-display {
+            font-size: clamp(3.5rem, 12vw, 6rem);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
+            line-height: 1;
+            margin-bottom: 1rem;
+            color: #f5e6d3;
+            text-shadow: 0 0 30px rgba(212, 165, 116, 0.2);
+            transition: color 0.5s ease;
+        }
+
+        .timer-display.warning {
+            color: #ffa03c;
+            text-shadow: 0 0 40px rgba(255, 160, 60, 0.3);
+            animation: warningPulse 1.5s ease-in-out infinite;
+        }
+
+        .timer-display.finished {
+            color: #66bb6a;
+            text-shadow: 0 0 40px rgba(102, 187, 106, 0.3);
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* プログレスバー */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #d4a574, #c4956a, #a07050);
+            transition: width 1s linear;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+            border-radius: 3px;
+        }
+
+        .progress-bar.warning {
+            background: linear-gradient(90deg, #ffa03c, #ff8c1a, #e67e22);
+        }
+
+        /* 時間範囲表示 */
+        .time-range {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #806040;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ===== メッセージ ===== */
+        .message-area {
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .message {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            line-height: 1.8;
+            padding: 1.2rem 2rem;
+            background: rgba(255, 160, 60, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 160, 60, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            color: #ffd090;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            animation: messageAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes messageAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .message.success {
+            background: rgba(102, 187, 106, 0.1);
+            border-color: rgba(102, 187, 106, 0.25);
+            color: #a5d6a7;
+        }
+
+        /* ===== コントロールボタン ===== */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.9rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f5e6d3;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #d4a574 0%, #a07050 100%);
+            box-shadow: 0 8px 25px rgba(160, 112, 80, 0.3);
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(160, 112, 80, 0.4);
+        }
+
+        .btn-start:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(212, 165, 116, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* ===== ドリンク情報 ===== */
+        .drink-info {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #806040;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .drink-info .icon {
+            font-size: 1.2rem;
+        }
+
+        /* ===== エール ===== */
+        .yell-area {
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .yell-message {
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            line-height: 1.7;
+            padding: 0.7rem 1.4rem;
+            background: rgba(102, 126, 234, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            color: #b0c4ff;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: yellAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes yellAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .yell-btn {
+            background: none;
+            border: 1px solid rgba(102, 126, 234, 0.25);
+            color: #8898d0;
+            font-size: 0.8rem;
+            padding: 0.35rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-bottom: 0.8rem;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .yell-btn:hover {
+            background: rgba(102, 126, 234, 0.12);
+            border-color: rgba(102, 126, 234, 0.45);
+            color: #a0b4ee;
+            transform: scale(1.05);
+        }
+
+        .yell-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== ステータスインジケーター ===== */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: #806040;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #555;
+            transition: background 0.3s ease;
+        }
+
+        .status-dot.active {
+            background: #66bb6a;
+            box-shadow: 0 0 10px rgba(102, 187, 106, 0.4);
+            animation: dotBlink 2s ease-in-out infinite;
+        }
+
+        .status-dot.warning {
+            background: #ffa03c;
+            box-shadow: 0 0 10px rgba(255, 160, 60, 0.4);
+            animation: dotBlink 1s ease-in-out infinite;
+        }
+
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ===== レスポンシブ ===== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .timer-card {
+                padding: 2rem 1.5rem;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景アイスカフェラテ SVG -->
+    <div class="bg-latte">
+        <svg width="420" height="560" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- カップ本体 -->
+            <rect x="100" y="140" width="220" height="320" rx="20" fill="#f5e6d3" stroke="#d4a574" stroke-width="3"/>
+            <!-- カップの底 -->
+            <ellipse cx="210" cy="460" rx="110" ry="15" fill="#e8c9a0" stroke="#d4a574" stroke-width="2"/>
+            <!-- ストロー -->
+            <rect x="250" y="40" width="12" height="380" rx="6" fill="#c0392b" opacity="0.8"/>
+            <rect x="245" y="40" width="22" height="30" rx="5" fill="#e74c3c" opacity="0.7"/>
+            <!-- アイス（氷） -->
+            <rect x="140" y="180" width="50" height="40" rx="8" fill="rgba(255,255,255,0.6)" stroke="rgba(200,200,200,0.4)" stroke-width="1.5"/>
+            <rect x="200" y="200" width="45" height="35" rx="8" fill="rgba(255,255,255,0.5)" stroke="rgba(200,200,200,0.3)" stroke-width="1.5"/>
+            <rect x="160" y="230" width="55" height="38" rx="8" fill="rgba(255,255,255,0.4)" stroke="rgba(200,200,200,0.3)" stroke-width="1.5"/>
+            <rect x="220" y="250" width="40" height="30" rx="8" fill="rgba(255,255,255,0.5)" stroke="rgba(200,200,200,0.3)" stroke-width="1.5"/>
+            <!-- カフェラテの液体（グラデーション） -->
+            <defs>
+                <linearGradient id="latte" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#d4a574" stop-opacity="0.3"/>
+                    <stop offset="40%" stop-color="#c4956a" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#6f4e37" stop-opacity="0.7"/>
+                </linearGradient>
+            </defs>
+            <rect x="103" y="280" width="214" height="175" rx="18" fill="url(#latte)"/>
+            <!-- ミルクの層 -->
+            <rect x="103" y="160" width="214" height="125" rx="18" fill="rgba(245,230,211,0.3)"/>
+            <!-- カップのフチ -->
+            <ellipse cx="210" cy="142" rx="112" ry="18" fill="#f0d9b5" stroke="#d4a574" stroke-width="3"/>
+            <!-- カップのハイライト -->
+            <rect x="115" y="170" width="8" height="200" rx="4" fill="rgba(255,255,255,0.08)"/>
+            <!-- ラベル -->
+            <rect x="140" y="340" width="140" height="50" rx="10" fill="rgba(139,90,43,0.15)" stroke="rgba(139,90,43,0.2)" stroke-width="1"/>
+            <text x="210" y="370" text-anchor="middle" fill="#8b5a2b" font-size="16" font-weight="600" opacity="0.4">ICED LATTE</text>
+        </svg>
+    </div>
+
+    <!-- 湯気エフェクト（アイスなので控えめ） -->
+    <div class="steam-container" style="opacity: 0.3;">
+        <div class="steam"></div>
+        <div class="steam"></div>
+        <div class="steam"></div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <div class="header-icon">☕</div>
+        <h1 class="title">Cafe Study Timer</h1>
+        <p class="subtitle">カフェで9:00までの集中時間を</p>
+
+        <!-- エール表示エリア -->
+        <div class="yell-area" id="yellArea">
+            <div class="yell-message" id="yellMessage" style="display: none;"></div>
+        </div>
+        <button class="yell-btn" id="yellBtn">📣 エール</button>
+
+        <div class="status" id="statusArea">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">待機中</span>
+        </div>
+
+        <div class="timer-card" id="timerCard">
+            <div class="current-time">🕐 現在 <span class="current-time-value" id="currentTime">--:--:--</span></div>
+            <div class="time-label">9:00まで残り</div>
+            <div class="timer-adjust-area">
+                <button class="adjust-btn adjust-up" id="adjustUp" title="時間を増やす (↑)">▲</button>
+                <div class="timer-display" id="timerDisplay">2:00:00</div>
+                <button class="adjust-btn adjust-down" id="adjustDown" title="時間を減らす (↓)">▼</button>
+            </div>
+            <div class="adjust-hint" id="adjustHint">↑↓ 5分単位 ／ Shift+↑↓ 1分単位</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div class="time-range">
+                <span id="startTimeLabel">-- START</span>
+                <span>9:00 FINISH</span>
+            </div>
+        </div>
+
+        <div class="message-area" id="messageArea"></div>
+
+        <div class="controls">
+            <button class="btn btn-start" id="startBtn">▶ スタート</button>
+            <button class="btn btn-reset" id="resetBtn">↻ リセット</button>
+        </div>
+
+        <div class="drink-info">
+            <span class="icon">🧊</span>
+            <span>Today's Drink: アイスカフェラテ</span>
+        </div>
+    </div>
+
+    <script>
+        // ===== 定数 =====
+        const DEADLINE_HOUR = 9;   // 終了時刻: 9:00
+        const DEADLINE_MIN = 0;
+        const WARNING_SECONDS = 15 * 60;    // 残り15分 = 900秒
+
+        // 現在時刻から締切(9:00)までの残り秒数を計算
+        function calcSecondsUntilDeadline() {
+            const now = new Date();
+            const deadline = new Date(now);
+            deadline.setHours(DEADLINE_HOUR, DEADLINE_MIN, 0, 0);
+            // 既に9:00を過ぎていたら0を返す
+            const diff = Math.floor((deadline - now) / 1000);
+            return Math.max(0, diff);
+        }
+
+        // ===== エールメッセージ（7_エールより） =====
+        const yellMessages = [
+            "一歩前進！未来の自分が今のあなたに感謝しているぞ",
+            "55万円の投資は、最高の未来へのチケットだ（30回の歩みと共に）",
+            "技術で余白を、仕組みで感謝を。",
+            "完璧主義を捨てろ。70%運用で継続することが最大の勝利だ。",
+            "あなたは今、AIを使われる側から『使いこなす側』へ進化した。",
+            "タイピング練習完了！あなたの指先はAIと同期し始めている。",
+            "54歳は終わりじゃない。ここからが本当のスタートだ。",
+            "人生100年時代。あなたにはまだ46年もある！",
+            "遅すぎることなど何もない。今日が人生で一番若い日だ。",
+            "年齢は数字に過ぎない。情熱こそが全てを決める。",
+            "54年間の経験が、今こそ最強の武器になる。",
+            "今日の1コミットが、1年後の1000コミットになる。",
+            "継続は天才を超える。あなたは毎日進化している。",
+            "小さな積み重ねが、やがて大きな山になる。",
+            "1日30分の学習が、1年で182時間の成長を生む。",
+            "昨日より1%成長すれば、1年後には37倍になる。",
+            "コードは書くたびに上手くなる。今日も一行、書こう。",
+            "エラーは成長のチャンス。デバッグ力こそが真の実力だ。",
+            "Gitのコミットログが、あなたの成長の証だ。",
+            "関数が理解できた瞬間、世界が広がる。",
+            "CSS一つマスターするごとに、表現力が10倍になる。",
+            "AIは敵じゃない。最高の相棒だ。",
+            "プロンプトを制する者が、AI時代を制する。",
+            "あなたはもう、AIアーキテクトへの道を歩き始めている。",
+            "AIに使われるな。AIを使いこなせ。",
+            "不安は成長の証。怖いからこそ、価値がある。",
+            "失敗を恐れるな。それは成功への通過点だ。",
+            "今日のチャレンジが、明日の自信になる。",
+            "リスクを取らないことが、最大のリスクだ。",
+            "勇気とは、恐怖がないことじゃない。恐怖と共に進むことだ。",
+            "自己投資は、唯一絶対に裏切らない投資だ。",
+            "知識と技術は、誰にも奪えない財産だ。",
+            "あなたの挑戦が、誰かの希望になる。",
+            "家族のために、まず自分が輝け。",
+            "あなたの背中を見て、誰かが勇気をもらっている。",
+            "完璧を目指すな。完成を目指せ。",
+            "比較するなら、昨日の自分とだけ。",
+            "焦らない。自分のペースで、確実に。",
+            "休むことも、成長の一部だ。",
+            "朝の30分は、夜の2時間に匹敵する。",
+            "集中の15分は、ダラダラの3時間を超える。",
+            "タイマーをセットして、今日も全力で駆け抜けろ。",
+            "時間は作るもの。待っていても来ない。",
+            "Expert-Reboot-54、順調に起動中！",
+            "今日のログが、未来の資産になる。",
+            "GitHubの草を育てることが、習慣を育てる。",
+            "写経は最高の学習法。手を動かせば、理解が深まる。",
+            "アウトプットしてこそ、真の理解が生まれる。",
+            "まず動かせ。最適化はその後だ。",
+            "あなたのコードが、誰かの人生を変える日が来る。",
+            "余白のある人生を、技術で実現しよう。",
+            "あなたの夢は、必ず叶う。諦めなければ。",
+            "今日も学べたことに、感謝しよう。",
+            "今日も自分を褒めよう。よくやっている。",
+            "楽しむことを忘れるな。学びは冒険だ。",
+            "あなたの目標は、必ず実現する。信じ続けろ。"
+        ];
+
+        const yellBtn = document.getElementById('yellBtn');
+        const yellMessage = document.getElementById('yellMessage');
+        let lastYellIndex = -1;
+
+        yellBtn.addEventListener('click', () => {
+            // 前回と違うメッセージを選ぶ
+            let idx;
+            do {
+                idx = Math.floor(Math.random() * yellMessages.length);
+            } while (idx === lastYellIndex && yellMessages.length > 1);
+            lastYellIndex = idx;
+
+            yellMessage.style.display = 'none';
+            setTimeout(() => {
+                yellMessage.textContent = yellMessages[idx];
+                yellMessage.style.display = 'block';
+                yellMessage.style.animation = 'none';
+                setTimeout(() => {
+                    yellMessage.style.animation = 'yellAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+                }, 10);
+            }, 80);
+        });
+
+        // ===== DOM要素 =====
+        const timerDisplay = document.getElementById('timerDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const timerCard = document.getElementById('timerCard');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const messageArea = document.getElementById('messageArea');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const currentTimeEl = document.getElementById('currentTime');
+
+        // ===== 現在時刻の更新 =====
+        function updateCurrentTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            currentTimeEl.textContent = `${h}:${m}:${s}`;
+        }
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+
+        const adjustUp = document.getElementById('adjustUp');
+        const adjustDown = document.getElementById('adjustDown');
+        const adjustHint = document.getElementById('adjustHint');
+
+        // ===== 状態管理 =====
+        const initialRemaining = calcSecondsUntilDeadline();
+        let totalSeconds = initialRemaining;
+        let remainingSeconds = initialRemaining;
+        let timerInterval = null;
+        let isRunning = false;
+        let warningShown = false;
+        let finishShown = false;
+
+        // ===== タイマー表示更新 =====
+        function updateDisplay() {
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const seconds = remainingSeconds % 60;
+
+            timerDisplay.textContent =
+                `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // プログレスバー更新
+            const elapsed = totalSeconds - remainingSeconds;
+            const progressPercent = totalSeconds > 0 ? (elapsed / totalSeconds) * 100 : 0;
+            progressBar.style.width = progressPercent + '%';
+
+            // 残り15分の警告
+            if (remainingSeconds <= WARNING_SECONDS && remainingSeconds > 0) {
+                timerDisplay.classList.add('warning');
+                timerCard.classList.add('warning');
+                progressBar.classList.add('warning');
+                statusDot.classList.remove('active');
+                statusDot.classList.add('warning');
+                statusText.textContent = '⚡ ラストスパート！';
+
+                if (!warningShown) {
+                    warningShown = true;
+                    showMessage('🔥 最後の追い込み！残り15分、全力で駆け抜けろ！', 'warning');
+                }
+            }
+
+            // タイマー終了
+            if (remainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isRunning = false;
+                timerDisplay.classList.remove('warning');
+                timerDisplay.classList.add('finished');
+                timerCard.classList.remove('warning');
+                progressBar.classList.remove('warning');
+                statusDot.classList.remove('warning', 'active');
+                statusText.textContent = '✅ 完了';
+                startBtn.textContent = '▶ スタート';
+                startBtn.disabled = true;
+
+                if (!finishShown) {
+                    finishShown = true;
+                    showMessage('🎉 お疲れさまでした！2時間の学習、完了です！', 'success');
+                }
+            }
+        }
+
+        // ===== メッセージ表示 =====
+        function showMessage(text, type = 'warning') {
+            messageArea.innerHTML = '';
+            const msgEl = document.createElement('div');
+            msgEl.className = `message ${type}`;
+            msgEl.textContent = text;
+            messageArea.appendChild(msgEl);
+        }
+
+        // ===== タイマー開始/一時停止 =====
+        function toggleTimer() {
+            if (isRunning) {
+                // 一時停止
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isRunning = false;
+                startBtn.textContent = '▶ 再開';
+                statusDot.classList.remove('active', 'warning');
+                statusText.textContent = '⏸ 一時停止中';
+            } else {
+                // 開始
+                if (remainingSeconds <= 0) return;
+                isRunning = true;
+                startBtn.textContent = '⏸ 一時停止';
+                statusDot.classList.add('active');
+                if (remainingSeconds <= WARNING_SECONDS) {
+                    statusDot.classList.remove('active');
+                    statusDot.classList.add('warning');
+                    statusText.textContent = '⚡ ラストスパート！';
+                } else {
+                    statusText.textContent = '📖 学習中...';
+                }
+
+                timerInterval = setInterval(() => {
+                    remainingSeconds--;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        // ===== リセット =====
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+            warningShown = false;
+            finishShown = false;
+
+            // 現在時刻から9:00までを再計算
+            const recalc = calcSecondsUntilDeadline();
+            totalSeconds = recalc;
+            remainingSeconds = recalc;
+
+            timerDisplay.classList.remove('warning', 'finished');
+            timerCard.classList.remove('warning');
+            progressBar.classList.remove('warning');
+            statusDot.classList.remove('active', 'warning');
+            statusText.textContent = '待機中';
+            startBtn.textContent = '▶ スタート';
+            startBtn.disabled = false;
+            messageArea.innerHTML = '';
+
+            updateDisplay();
+
+            // まだ9:00前なら自動スタート
+            if (recalc > 0) {
+                autoStart();
+            }
+        }
+
+        // ===== コーヒー豆の背景パーティクル生成 =====
+        function createCoffeeBeans() {
+            const beanEmojis = ['☕', '✦', '•'];
+            for (let i = 0; i < 12; i++) {
+                const bean = document.createElement('div');
+                bean.className = 'coffee-bean';
+                bean.textContent = beanEmojis[Math.floor(Math.random() * beanEmojis.length)];
+                bean.style.left = Math.random() * 100 + 'vw';
+                bean.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                bean.style.animationDelay = (Math.random() * 20) + 's';
+                bean.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
+                document.body.appendChild(bean);
+            }
+        }
+
+        // ===== 時間調整 =====
+        const STEP_NORMAL = 5 * 60;  // 5分
+        const STEP_SHIFT = 1 * 60;   // 1分
+        const MIN_SECONDS = 60;       // 最小1分
+        const MAX_SECONDS = 4 * 60 * 60; // 最大4時間
+
+        function adjustTime(delta) {
+            // タイマー動作中は調整不可
+            if (isRunning) return;
+
+            remainingSeconds = Math.max(MIN_SECONDS, Math.min(MAX_SECONDS, remainingSeconds + delta));
+            totalSeconds = remainingSeconds;
+            warningShown = false;
+            finishShown = false;
+
+            // 終了状態をクリア
+            timerDisplay.classList.remove('warning', 'finished');
+            timerCard.classList.remove('warning');
+            progressBar.classList.remove('warning');
+            startBtn.disabled = false;
+            if (!isRunning) {
+                startBtn.textContent = '▶ スタート';
+                statusDot.classList.remove('warning', 'active');
+                statusText.textContent = '待機中';
+            }
+            messageArea.innerHTML = '';
+
+            updateDisplay();
+            updateAdjustButtons();
+        }
+
+        function updateAdjustButtons() {
+            adjustUp.classList.toggle('disabled', isRunning || remainingSeconds >= MAX_SECONDS);
+            adjustDown.classList.toggle('disabled', isRunning || remainingSeconds <= MIN_SECONDS);
+            adjustHint.classList.toggle('hidden', isRunning);
+        }
+
+        function flashButton(btn) {
+            btn.classList.add('flash');
+            setTimeout(() => btn.classList.remove('flash'), 150);
+        }
+
+        // ===== イベントリスナー =====
+        startBtn.addEventListener('click', () => { toggleTimer(); updateAdjustButtons(); });
+        resetBtn.addEventListener('click', () => { resetTimer(); updateAdjustButtons(); });
+
+        adjustUp.addEventListener('click', () => {
+            adjustTime(STEP_NORMAL);
+            flashButton(adjustUp);
+        });
+        adjustDown.addEventListener('click', () => {
+            adjustTime(-STEP_NORMAL);
+            flashButton(adjustDown);
+        });
+
+        // キーボードショートカット
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (!startBtn.disabled) { toggleTimer(); updateAdjustButtons(); }
+            }
+            if (e.code === 'KeyR' && !e.ctrlKey && !e.metaKey) {
+                resetTimer();
+                updateAdjustButtons();
+            }
+            if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                const step = e.shiftKey ? STEP_SHIFT : STEP_NORMAL;
+                adjustTime(step);
+                flashButton(adjustUp);
+            }
+            if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                const step = e.shiftKey ? STEP_SHIFT : STEP_NORMAL;
+                adjustTime(-step);
+                flashButton(adjustDown);
+            }
+        });
+
+        // ===== 自動スタート =====
+        function autoStart() {
+            if (remainingSeconds <= 0 || isRunning) return;
+            isRunning = true;
+            startBtn.textContent = '⏸ 一時停止';
+            statusDot.classList.add('active');
+            if (remainingSeconds <= WARNING_SECONDS) {
+                statusDot.classList.remove('active');
+                statusDot.classList.add('warning');
+                statusText.textContent = '⚡ ラストスパート！';
+            } else {
+                statusText.textContent = '📖 学習中...';
+            }
+            timerInterval = setInterval(() => {
+                remainingSeconds--;
+                updateDisplay();
+            }, 1000);
+            updateAdjustButtons();
+        }
+
+        // ===== 初期化 =====
+        // 開始時刻ラベルを現在時刻で設定
+        (function setStartLabel() {
+            const now = new Date();
+            const h = now.getHours();
+            const m = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('startTimeLabel').textContent = `${h}:${m} START`;
+        })();
+
+        updateDisplay();
+        updateAdjustButtons();
+        createCoffeeBeans();
+
+        // 起動時: 9:00前なら自動カウントダウン開始、過ぎていたら完了表示
+        if (initialRemaining > 0) {
+            autoStart();
+        } else {
+            timerDisplay.classList.add('finished');
+            statusText.textContent = '✅ 完了';
+            startBtn.disabled = true;
+            showMessage('🎉 本日の学習時間（〜9:00）は終了しました！', 'success');
+        }
+
+        // ===== Service Worker 登録 =====
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
