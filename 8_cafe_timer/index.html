@@ -430,6 +430,31 @@
             font-size: 1.2rem;
         }
 
+        /* ===== 更新ボタン ===== */
+        .btn-reload {
+            margin-top: 1rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(212, 165, 116, 0.2);
+            color: #a08060;
+            font-size: 0.85rem;
+            padding: 0.5rem 1.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-reload:hover {
+            background: rgba(212, 165, 116, 0.1);
+            border-color: rgba(212, 165, 116, 0.4);
+            color: #d4a574;
+            transform: scale(1.05);
+        }
+
+        .btn-reload:active {
+            transform: scale(0.95);
+        }
+
         /* ===== エール ===== */
         .yell-area {
             min-height: 2.5rem;
@@ -618,6 +643,7 @@
                 <span id="startTimeLabel">-- START</span>
                 <span>9:00 FINISH</span>
             </div>
+            <button class="btn-reload" id="reloadBtn" title="ページを更新">🔄 更新</button>
         </div>
 
         <div class="message-area" id="messageArea"></div>
@@ -816,6 +842,11 @@
                 }
             }
         }
+
+        // ===== 更新ボタン =====
+        document.getElementById('reloadBtn').addEventListener('click', () => {
+            location.reload();
+        });
 
         // ===== メッセージ表示 =====
         function showMessage(text, type = 'warning') {
