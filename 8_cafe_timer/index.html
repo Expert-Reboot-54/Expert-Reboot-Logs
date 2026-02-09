@@ -354,12 +354,6 @@
         }
 
         /* ===== コントロールボタン ===== */
-        .controls {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
 
         .btn {
             padding: 0.9rem 2.5rem;
@@ -428,6 +422,21 @@
 
         .drink-info .icon {
             font-size: 1.2rem;
+        }
+
+        /* ===== タイマーカード内コントロール ===== */
+        .controls-inline {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .controls-inline .btn {
+            padding: 0.6rem 1.8rem;
+            font-size: 0.85rem;
         }
 
         /* ===== 更新ボタン ===== */
@@ -554,13 +563,9 @@
             .timer-card {
                 padding: 2rem 1.5rem;
             }
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            .btn {
-                width: 100%;
-                max-width: 250px;
+            .controls-inline .btn {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -628,6 +633,10 @@
         </div>
 
         <div class="timer-card" id="timerCard">
+            <div class="controls-inline">
+                <button class="btn btn-start" id="startBtn">▶ スタート</button>
+                <button class="btn btn-reset" id="resetBtn">↻ リセット</button>
+            </div>
             <div class="current-time">🕐 現在 <span class="current-time-value" id="currentTime">--:--:--</span></div>
             <div class="time-label">9:00まで残り</div>
             <div class="timer-adjust-area">
@@ -647,11 +656,6 @@
         </div>
 
         <div class="message-area" id="messageArea"></div>
-
-        <div class="controls">
-            <button class="btn btn-start" id="startBtn">▶ スタート</button>
-            <button class="btn btn-reset" id="resetBtn">↻ リセット</button>
-        </div>
 
         <div class="drink-info">
             <span class="icon">🧊</span>
