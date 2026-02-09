@@ -34,6 +34,53 @@
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
+        /* ===== プルトゥリフレッシュ ===== */
+        .ptr-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 0;
+            overflow: hidden;
+            z-index: 100;
+            background: rgba(212, 165, 116, 0.08);
+            transition: height 0.2s ease;
+            pointer-events: none;
+        }
+
+        .ptr-indicator.active {
+            transition: none;
+        }
+
+        .ptr-indicator.refreshing .ptr-arrow {
+            animation: ptrSpin 0.8s linear infinite;
+        }
+
+        .ptr-arrow {
+            font-size: 1.4rem;
+            color: #d4a574;
+            transition: transform 0.2s ease;
+        }
+
+        .ptr-arrow.flipped {
+            transform: rotate(180deg);
+        }
+
+        .ptr-text {
+            font-size: 0.75rem;
+            color: #a08060;
+            margin-top: 0.2rem;
+        }
+
+        @keyframes ptrSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         /* ===== 背景のアイスカフェラテアイコン ===== */
         .bg-latte {
             position: fixed;
@@ -590,6 +637,12 @@
         <div class="steam"></div>
     </div>
 
+    <!-- プルトゥリフレッシュ インジケーター -->
+    <div class="ptr-indicator" id="ptrIndicator">
+        <span class="ptr-arrow" id="ptrArrow">↓</span>
+        <span class="ptr-text" id="ptrText">引っ張って更新</span>
+    </div>
+
     <!-- メインコンテンツ -->
     <div class="container">
         <div class="header-icon">☕</div>
@@ -1026,6 +1079,57 @@
             startBtn.disabled = true;
             showMessage('🎉 本日の学習時間（〜9:00）は終了しました！', 'success');
         }
+
+        // ===== プルトゥリフレッシュ =====
+        (function() {
+            const ptr = document.getElementById('ptrIndicator');
+            const ptrArrow = document.getElementById('ptrArrow');
+            const ptrTextEl = document.getElementById('ptrText');
+            const threshold = 80;
+            let startY = 0;
+            let pulling = false;
+
+            document.addEventListener('touchstart', (e) => {
+                if (window.scrollY === 0) {
+                    startY = e.touches[0].clientY;
+                    pulling = true;
+                    ptr.classList.add('active');
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!pulling) return;
+                const dy = Math.max(0, e.touches[0].clientY - startY);
+                if (dy > 0) {
+                    const h = Math.min(dy * 0.5, 100);
+                    ptr.style.height = h + 'px';
+                    if (h >= threshold * 0.5) {
+                        ptrArrow.classList.add('flipped');
+                        ptrTextEl.textContent = '離して更新';
+                    } else {
+                        ptrArrow.classList.remove('flipped');
+                        ptrTextEl.textContent = '引っ張って更新';
+                    }
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                if (!pulling) return;
+                pulling = false;
+                ptr.classList.remove('active');
+                const h = parseInt(ptr.style.height) || 0;
+                if (h >= threshold * 0.5) {
+                    ptr.classList.add('refreshing');
+                    ptrArrow.classList.remove('flipped');
+                    ptrArrow.textContent = '⟳';
+                    ptrTextEl.textContent = '更新中...';
+                    ptr.style.height = '60px';
+                    setTimeout(() => location.reload(), 600);
+                } else {
+                    ptr.style.height = '0';
+                }
+            }, { passive: true });
+        })();
 
         // ===== Service Worker 登録 =====
         if ('serviceWorker' in navigator) {
