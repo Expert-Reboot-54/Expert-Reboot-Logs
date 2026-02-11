@@ -377,31 +377,169 @@
         }
 
         .timer-display {
-            font-size: clamp(3.5rem, 12vw, 6rem);
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 4px;
-            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
             margin-bottom: 1rem;
-            color: #f5e6d3;
-            text-shadow: 0 0 30px rgba(212, 165, 116, 0.2);
-            transition: color 0.5s ease;
+            transition: filter 0.5s ease;
         }
 
-        .timer-display.warning {
+        .timer-display.warning .flip-card {
+            background: linear-gradient(180deg, #4a2800 0%, #3a1e00 49.9%, #321a00 50%, #2a1400 100%);
+            border-color: rgba(255, 160, 60, 0.3);
+        }
+        .timer-display.warning .flip-current {
             color: #ffa03c;
-            text-shadow: 0 0 40px rgba(255, 160, 60, 0.3);
+        }
+        .timer-display.warning .flip-colon {
+            color: #ffa03c;
+        }
+        .timer-display.warning {
             animation: warningPulse 1.5s ease-in-out infinite;
         }
 
-        .timer-display.finished {
+        .timer-display.finished .flip-card {
+            background: linear-gradient(180deg, #0a2a0e 0%, #082208 49.9%, #071e07 50%, #051a05 100%);
+            border-color: rgba(102, 187, 106, 0.3);
+        }
+        .timer-display.finished .flip-current {
             color: #66bb6a;
-            text-shadow: 0 0 40px rgba(102, 187, 106, 0.3);
+        }
+        .timer-display.finished .flip-colon {
+            color: #66bb6a;
         }
 
         @keyframes warningPulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.8; }
+        }
+
+        .flip-group {
+            display: flex;
+            gap: 3px;
+        }
+
+        .flip-colon {
+            font-size: clamp(2rem, 7vw, 3.5rem);
+            font-weight: 800;
+            color: #d4a574;
+            line-height: 1;
+            padding: 0 2px;
+            align-self: center;
+            opacity: 0.7;
+        }
+
+        /* フリップカード */
+        .flip-card {
+            position: relative;
+            width: clamp(2.2rem, 8vw, 4rem);
+            height: clamp(3rem, 10vw, 5.4rem);
+            background: linear-gradient(180deg, #2a1e14 0%, #231810 49.9%, #1e140c 50%, #1a100a 100%);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 165, 116, 0.15);
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            perspective: 300px;
+        }
+
+        /* 中央の溝（カレンダーの折り目） */
+        .flip-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03);
+            z-index: 5;
+            transform: translateY(-0.5px);
+        }
+
+        .flip-current {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2rem, 7vw, 3.6rem);
+            font-weight: 800;
+            color: #f5e6d3;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* フリップアニメーション上半分（古い数字が倒れる） */
+        .flip-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            z-index: 10;
+            transform-origin: bottom center;
+            background: linear-gradient(180deg, #2a1e14 0%, #231810 100%);
+            border-radius: 8px 8px 0 0;
+            animation: flipDown 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+        }
+
+        .flip-top .flip-digit {
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2rem, 7vw, 3.6rem);
+            font-weight: 800;
+            color: #f5e6d3;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* フリップアニメーション下半分（新しい数字が起き上がる） */
+        .flip-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            z-index: 8;
+            transform-origin: top center;
+            background: linear-gradient(180deg, #1e140c 0%, #1a100a 100%);
+            border-radius: 0 0 8px 8px;
+            transform: rotateX(90deg);
+            animation: flipUp 0.5s 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+        }
+
+        .flip-bottom .flip-digit {
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            top: -100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2rem, 7vw, 3.6rem);
+            font-weight: 800;
+            color: #f5e6d3;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes flipDown {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(-90deg); }
+        }
+
+        @keyframes flipUp {
+            0% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
         }
 
         /* プログレスバー */
@@ -794,7 +932,21 @@
             <div class="time-label">9:00まで残り</div>
             <div class="timer-adjust-area">
                 <button class="adjust-btn adjust-up" id="adjustUp" title="時間を増やす (↑)">▲</button>
-                <div class="timer-display" id="timerDisplay">2:00:00</div>
+                <div class="timer-display" id="timerDisplay">
+                    <div class="flip-group">
+                        <div class="flip-card" id="flipH"><div class="flip-current">2</div></div>
+                    </div>
+                    <span class="flip-colon">:</span>
+                    <div class="flip-group">
+                        <div class="flip-card" id="flipM1"><div class="flip-current">0</div></div>
+                        <div class="flip-card" id="flipM2"><div class="flip-current">0</div></div>
+                    </div>
+                    <span class="flip-colon">:</span>
+                    <div class="flip-group">
+                        <div class="flip-card" id="flipS1"><div class="flip-current">0</div></div>
+                        <div class="flip-card" id="flipS2"><div class="flip-current">0</div></div>
+                    </div>
+                </div>
                 <button class="adjust-btn adjust-down" id="adjustDown" title="時間を減らす (↓)">▼</button>
             </div>
             <div class="adjust-hint" id="adjustHint">↑↓ 5分単位 ／ Shift+↑↓ 1分単位</div>
@@ -967,14 +1119,70 @@
         let warningShown = false;
         let finishShown = false;
 
+        // ===== フリップカード要素 =====
+        const flipCards = {
+            h:  document.getElementById('flipH'),
+            m1: document.getElementById('flipM1'),
+            m2: document.getElementById('flipM2'),
+            s1: document.getElementById('flipS1'),
+            s2: document.getElementById('flipS2'),
+        };
+        const prevDigits = { h: '', m1: '', m2: '', s1: '', s2: '' };
+
+        function flipDigit(card, newVal) {
+            const cur = card.querySelector('.flip-current');
+            const oldVal = cur.textContent;
+            if (oldVal === newVal) return;
+
+            // 古いアニメーション要素を除去
+            card.querySelectorAll('.flip-top, .flip-bottom').forEach(el => el.remove());
+
+            // 上半分（古い数字が倒れる）
+            const top = document.createElement('div');
+            top.className = 'flip-top';
+            const topDigit = document.createElement('div');
+            topDigit.className = 'flip-digit';
+            topDigit.textContent = oldVal;
+            top.appendChild(topDigit);
+
+            // 下半分（新しい数字が起き上がる）
+            const bottom = document.createElement('div');
+            bottom.className = 'flip-bottom';
+            const bottomDigit = document.createElement('div');
+            bottomDigit.className = 'flip-digit';
+            bottomDigit.textContent = newVal;
+            bottom.appendChild(bottomDigit);
+
+            card.appendChild(top);
+            card.appendChild(bottom);
+
+            // 現在の数字を即座に更新
+            cur.textContent = newVal;
+
+            // アニメーション完了後に要素を除去
+            setTimeout(() => {
+                top.remove();
+                bottom.remove();
+            }, 800);
+        }
+
         // ===== タイマー表示更新 =====
         function updateDisplay() {
             const hours = Math.floor(remainingSeconds / 3600);
             const minutes = Math.floor((remainingSeconds % 3600) / 60);
             const seconds = remainingSeconds % 60;
 
-            timerDisplay.textContent =
-                `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const h  = String(hours);
+            const m1 = String(Math.floor(minutes / 10));
+            const m2 = String(minutes % 10);
+            const s1 = String(Math.floor(seconds / 10));
+            const s2 = String(seconds % 10);
+
+            flipDigit(flipCards.h,  h);
+            flipDigit(flipCards.m1, m1);
+            flipDigit(flipCards.m2, m2);
+            flipDigit(flipCards.s1, s1);
+            flipDigit(flipCards.s2, s2);
 
             // プログレスバー更新
             const elapsed = totalSeconds - remainingSeconds;
