@@ -872,8 +872,7 @@
         const yellMessage = document.getElementById('yellMessage');
         let lastYellIndex = -1;
 
-        yellBtn.addEventListener('click', () => {
-            // 前回と違うメッセージを選ぶ
+        function showYell() {
             let idx;
             do {
                 idx = Math.floor(Math.random() * yellMessages.length);
@@ -889,7 +888,14 @@
                     yellMessage.style.animation = 'yellAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
                 }, 10);
             }, 80);
-        });
+        }
+
+        // ボタンクリックで表示
+        yellBtn.addEventListener('click', showYell);
+
+        // 1分ごとに自動で入れ替え
+        showYell();
+        setInterval(showYell, 60 * 1000);
 
         // ===== DOM要素 =====
         const timerDisplay = document.getElementById('timerDisplay');
