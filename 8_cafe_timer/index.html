@@ -893,8 +893,8 @@
         // ボタンクリックで表示
         yellBtn.addEventListener('click', showYell);
 
-        // 1分ごとに自動で入れ替え
-        showYell();
+        // 1分ごとに自動で入れ替え（起動1秒後に初回表示）
+        setTimeout(showYell, 1000);
         setInterval(showYell, 60 * 1000);
 
         // ===== DOM要素 =====
