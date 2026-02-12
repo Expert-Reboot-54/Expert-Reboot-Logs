@@ -76,7 +76,7 @@
         }
         .timer-display .flip-group { display: flex; gap: 4px; }
         .timer-display .flip-colon {
-            font-size: clamp(2.5rem, 10vw, 4rem);
+            font-size: clamp(3.3rem, 12vw, 4.8rem);
             font-weight: 800;
             padding: 0 4px;
             opacity: 0.85;
@@ -85,8 +85,8 @@
         body.break .timer-display .flip-colon { color: #90f0b0; }
         .timer-display .flip-card {
             position: relative;
-            width: clamp(2.5rem, 12vw, 4.5rem);
-            height: clamp(3.5rem, 16vw, 6rem);
+            width: clamp(3.2rem, 14vw, 5.2rem);
+            height: clamp(4.3rem, 18vw, 6.8rem);
             background: linear-gradient(180deg, #2d1515 0%, #251010 49.9%, #1e0c0c 50%, #180a0a 100%);
             border-radius: 8px;
             border: 1px solid rgba(255, 100, 100, 0.2);
@@ -115,7 +115,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(2.5rem, 12vw, 4.2rem);
+            font-size: clamp(3.3rem, 14vw, 5rem);
             font-weight: 800;
             color: #ff9090;
             font-variant-numeric: tabular-nums;
@@ -142,7 +142,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(2.5rem, 12vw, 4.2rem);
+            font-size: clamp(3.3rem, 14vw, 5rem);
             font-weight: 800;
             color: #ff9090;
             font-variant-numeric: tabular-nums;
@@ -160,7 +160,7 @@
             background: linear-gradient(180deg, #1e0c0c 0%, #180a0a 100%);
             border-radius: 0 0 8px 8px;
             transform: rotateX(90deg);
-            animation: flipUp 0.5s 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+            animation: flipUp 0.5s 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
         }
         body.break .timer-display .flip-bottom { background: linear-gradient(180deg, #091a10 0%, #061408 100%); }
         .timer-display .flip-bottom .flip-digit {
@@ -171,7 +171,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(2.5rem, 12vw, 4.2rem);
+            font-size: clamp(3.3rem, 14vw, 5rem);
             font-weight: 800;
             color: #ff9090;
             font-variant-numeric: tabular-nums;
@@ -393,12 +393,9 @@
 
             card.appendChild(top);
             card.appendChild(bottom);
+            cur.textContent = newVal;
 
-            setTimeout(() => {
-                top.remove();
-                bottom.remove();
-                cur.textContent = newVal;
-            }, 1100);
+            setTimeout(() => { top.remove(); bottom.remove(); }, 800);
         }
 
         function updateUI() {
