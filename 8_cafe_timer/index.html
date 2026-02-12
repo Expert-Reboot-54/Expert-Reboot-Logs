@@ -1005,9 +1005,12 @@
 
             card.appendChild(top);
             card.appendChild(bottom);
-            cur.textContent = newVal;
 
-            setTimeout(() => { top.remove(); bottom.remove(); }, 1100);
+            setTimeout(() => {
+                top.remove();
+                bottom.remove();
+                cur.textContent = newVal;
+            }, 1100);
         }
 
         function updatePomodoroUI() {
