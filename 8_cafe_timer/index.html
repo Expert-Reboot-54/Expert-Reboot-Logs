@@ -315,7 +315,38 @@
         .pomodoro-progress-wrap {
             width: 180px;
             height: 180px;
-            margin: 0 auto 1rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .pomodoro-arrow-btn {
+            display: block;
+            width: 56px;
+            height: 32px;
+            margin: 0 auto 0.3rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(212, 165, 116, 0.25);
+            border-radius: 10px;
+            color: #d4a574;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+        .pomodoro-arrow-btn:hover {
+            background: rgba(212, 165, 116, 0.12);
+            border-color: rgba(212, 165, 116, 0.4);
+            transform: scale(1.08);
+        }
+        .pomodoro-arrow-btn:active {
+            transform: scale(0.95);
+        }
+        .pomodoro-arrow-btn:disabled,
+        .pomodoro-arrow-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .pomodoro-arrow-down {
+            margin: 0.3rem auto 1rem;
         }
         .pomodoro-progress-ring {
             transform: rotate(-90deg);
@@ -828,6 +859,7 @@
                         stroke-dasharray="515" stroke-dashoffset="0" />
                 </svg>
             </div>
+            <button class="pomodoro-arrow-btn pomodoro-arrow-up" id="pomodoroArrowUp" title="時間を増やす">▲</button>
             <div class="pomodoro-display" id="timerDisplay">
                 <div class="flip-group">
                     <div class="flip-card" id="flipM1"><div class="flip-current">2</div></div>
@@ -839,6 +871,7 @@
                     <div class="flip-card" id="flipS2"><div class="flip-current">0</div></div>
                 </div>
             </div>
+            <button class="pomodoro-arrow-btn pomodoro-arrow-down" id="pomodoroArrowDown" title="時間を減らす">▼</button>
             <div class="controls-inline">
                 <button class="btn btn-start" id="startBtn">▶ スタート</button>
                 <button class="btn btn-reset" id="resetBtn">↻ リセット</button>
@@ -961,6 +994,9 @@
         const BREAK_SEC = 5 * 60;
         const TOTAL_POMODOROS = 4;
         const POMODORO_CIRCUMFERENCE = 2 * Math.PI * 82;
+        const POMODORO_MIN_SEC = 5 * 60;   // 5分
+        const POMODORO_MAX_SEC = 60 * 60;  // 60分
+        const POMODORO_STEP = 5 * 60;      // 5分刻み
 
         const timerDisplay = document.getElementById('timerDisplay');
         const timerCard = document.getElementById('timerCard');
@@ -972,6 +1008,8 @@
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
         const pomodorosIcons = document.getElementById('pomodorosIcons');
+        const pomodoroArrowUp = document.getElementById('pomodoroArrowUp');
+        const pomodoroArrowDown = document.getElementById('pomodoroArrowDown');
         const flipCards = {
             m1: document.getElementById('flipM1'),
             m2: document.getElementById('flipM2'),
@@ -1034,7 +1072,8 @@
 
             timerCard.classList.remove('work-phase', 'break-phase');
             timerCard.classList.add(isWork ? 'work-phase' : 'break-phase');
-            phaseLabel.textContent = isWork ? '🍅 集中（25分）' : '☕ 休憩（5分）';
+            const phaseMin = Math.round(totalSec / 60);
+            phaseLabel.textContent = isWork ? `🍅 集中（${phaseMin}分）` : `☕ 休憩（${phaseMin}分）`;
 
             statusText.textContent = isRunning ? (isWork ? '📖 集中中...' : '☕ 休憩中...') : '待機中';
 
@@ -1045,6 +1084,9 @@
                 span.textContent = '🍅';
                 pomodorosIcons.appendChild(span);
             }
+
+            pomodoroArrowUp.classList.toggle('disabled', isRunning || remainingSec >= POMODORO_MAX_SEC);
+            pomodoroArrowDown.classList.toggle('disabled', isRunning || remainingSec <= POMODORO_MIN_SEC);
         }
 
         function pomodoroTick() {
@@ -1098,6 +1140,17 @@
             updatePomodoroUI();
         });
 
+        function adjustPomodoroTime(delta) {
+            if (isRunning) return;
+            const next = Math.max(POMODORO_MIN_SEC, Math.min(POMODORO_MAX_SEC, remainingSec + delta));
+            remainingSec = next;
+            totalSec = next;
+            updatePomodoroUI();
+        }
+
+        pomodoroArrowUp.addEventListener('click', () => adjustPomodoroTime(POMODORO_STEP));
+        pomodoroArrowDown.addEventListener('click', () => adjustPomodoroTime(-POMODORO_STEP));
+
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -1105,6 +1158,14 @@
             }
             if (e.code === 'KeyR' && !e.ctrlKey && !e.metaKey) {
                 resetBtn.click();
+            }
+            if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                adjustPomodoroTime(POMODORO_STEP);
+            }
+            if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                adjustPomodoroTime(-POMODORO_STEP);
             }
         });
 
