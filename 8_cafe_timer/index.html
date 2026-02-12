@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Cafe Study Timer - 7:00〜9:00</title>
+    <title>Cafe Study Timer - ポモドーロ</title>
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
@@ -292,297 +292,76 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        .current-time {
-            font-size: clamp(1rem, 3vw, 1.3rem);
+        /* ===== ポモドーロ（9_Pomodoro 統合） ===== */
+        .pomodoro-card.work-phase {
+            border-color: rgba(255, 120, 100, 0.2);
+        }
+        .pomodoro-card.break-phase {
+            border-color: rgba(100, 200, 130, 0.2);
+        }
+
+        .pomodoro-phase-label {
+            font-size: 0.95rem;
             color: #d4a574;
-            font-weight: 300;
-            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+        .pomodoro-card.work-phase .pomodoro-phase-label { color: #ff9090; }
+        .pomodoro-card.break-phase .pomodoro-phase-label { color: #90e0a8; }
+
+        .pomodoro-progress-wrap {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1rem;
+        }
+        .pomodoro-progress-ring {
+            transform: rotate(-90deg);
+        }
+        .pomodoro-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.08);
+            stroke-width: 8;
+        }
+        .pomodoro-ring-fill {
+            fill: none;
+            stroke: #d4a574;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s linear;
+        }
+        .pomodoro-card.work-phase .pomodoro-ring-fill { stroke: #ff8080; }
+        .pomodoro-card.break-phase .pomodoro-ring-fill { stroke: #80e0a0; }
+
+        .pomodoro-display {
+            font-size: clamp(3.5rem, 14vw, 5.5rem);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
             margin-bottom: 1.2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .current-time-value {
-            font-weight: 600;
-            color: #e8c9a0;
-        }
-
-        .time-label {
-            font-size: 0.85rem;
-            color: #a08060;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 0.8rem;
-        }
-
-        .timer-adjust-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.2rem;
-        }
-
-        .adjust-btn {
-            background: none;
-            border: 1px solid rgba(212, 165, 116, 0.15);
-            color: #a08060;
-            font-size: 0.9rem;
-            width: 60px;
-            height: 28px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            opacity: 0.5;
-        }
-
-        .adjust-btn:hover {
-            opacity: 1;
-            background: rgba(212, 165, 116, 0.1);
-            border-color: rgba(212, 165, 116, 0.35);
-            color: #d4a574;
-        }
-
-        .adjust-btn:active {
-            transform: scale(0.92);
-            background: rgba(212, 165, 116, 0.18);
-        }
-
-        .adjust-btn.disabled {
-            opacity: 0.15;
-            pointer-events: none;
-        }
-
-        .adjust-btn.flash {
-            color: #e8c9a0;
-            border-color: rgba(212, 165, 116, 0.5);
-            background: rgba(212, 165, 116, 0.15);
-        }
-
-        .adjust-hint {
-            font-size: 0.7rem;
-            color: #605040;
-            letter-spacing: 0.5px;
-            margin-top: 0.3rem;
-            margin-bottom: 0.8rem;
-            transition: opacity 0.3s ease;
-        }
-
-        .adjust-hint.hidden {
-            opacity: 0;
-        }
-
-        .timer-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            margin-bottom: 1rem;
-            transition: filter 0.5s ease;
-        }
-
-        .timer-display.warning .flip-card {
-            background: linear-gradient(180deg, #4a2800 0%, #3a1e00 49.9%, #321a00 50%, #2a1400 100%);
-            border-color: rgba(255, 160, 60, 0.3);
-        }
-        .timer-display.warning .flip-current {
-            color: #ffa03c;
-        }
-        .timer-display.warning .flip-colon {
-            color: #ffa03c;
-        }
-        .timer-display.warning {
-            animation: warningPulse 1.5s ease-in-out infinite;
-        }
-
-        .timer-display.finished .flip-card {
-            background: linear-gradient(180deg, #0a2a0e 0%, #082208 49.9%, #071e07 50%, #051a05 100%);
-            border-color: rgba(102, 187, 106, 0.3);
-        }
-        .timer-display.finished .flip-current {
-            color: #66bb6a;
-        }
-        .timer-display.finished .flip-colon {
-            color: #66bb6a;
-        }
-
-        @keyframes warningPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .flip-group {
-            display: flex;
-            gap: 3px;
-        }
-
-        .flip-colon {
-            font-size: clamp(2rem, 7vw, 3.5rem);
-            font-weight: 800;
-            color: #d4a574;
-            line-height: 1;
-            padding: 0 2px;
-            align-self: center;
-            opacity: 0.7;
-        }
-
-        /* フリップカード */
-        .flip-card {
-            position: relative;
-            width: clamp(2.8rem, 10vw, 4.8rem);
-            height: clamp(3.8rem, 13vw, 6.5rem);
-            background: linear-gradient(180deg, #2a1e14 0%, #231810 49.9%, #1e140c 50%, #1a100a 100%);
-            border-radius: 8px;
-            border: 1px solid rgba(212, 165, 116, 0.15);
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.04);
-            overflow: hidden;
-            perspective: 300px;
-        }
-
-        /* 中央の溝（カレンダーの折り目） */
-        .flip-card::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03);
-            z-index: 5;
-            transform: translateY(-0.5px);
-        }
-
-        .flip-current {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(3.1rem, 10vw, 4.9rem);
-            font-weight: 800;
             color: #f5e6d3;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 30px rgba(212, 165, 116, 0.2);
         }
+        .pomodoro-card.work-phase .pomodoro-display { color: #ff9090; }
+        .pomodoro-card.break-phase .pomodoro-display { color: #90e0a8; }
 
-        /* フリップアニメーション上半分（古い数字が倒れる） */
-        .flip-top {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 50%;
-            overflow: hidden;
-            z-index: 10;
-            transform-origin: bottom center;
-            background: linear-gradient(180deg, #2a1e14 0%, #231810 100%);
-            border-radius: 8px 8px 0 0;
-            animation: flipDown 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+        .pomodoros-done {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(212, 165, 116, 0.1);
         }
-
-        .flip-top .flip-digit {
-            position: absolute;
-            width: 100%;
-            height: 200%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(3.1rem, 10vw, 4.9rem);
-            font-weight: 800;
-            color: #f5e6d3;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-        }
-
-        /* フリップアニメーション下半分（新しい数字が起き上がる） */
-        .flip-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50%;
-            overflow: hidden;
-            z-index: 8;
-            transform-origin: top center;
-            background: linear-gradient(180deg, #1e140c 0%, #1a100a 100%);
-            border-radius: 0 0 8px 8px;
-            transform: rotateX(90deg);
-            animation: flipUp 0.5s 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
-        }
-
-        .flip-bottom .flip-digit {
-            position: absolute;
-            width: 100%;
-            height: 200%;
-            top: -100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(3.1rem, 10vw, 4.9rem);
-            font-weight: 800;
-            color: #f5e6d3;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-        }
-
-        @keyframes flipDown {
-            0% { transform: rotateX(0deg); }
-            100% { transform: rotateX(-90deg); }
-        }
-
-        @keyframes flipUp {
-            0% { transform: rotateX(90deg); }
-            100% { transform: rotateX(0deg); }
-        }
-
-        /* プログレスバー */
-        .progress-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-        }
-
-        .progress-bar {
-            height: 100%;
-            border-radius: 3px;
-            background: linear-gradient(90deg, #d4a574, #c4956a, #a07050);
-            transition: width 1s linear;
-            position: relative;
-        }
-
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 30px;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
-            border-radius: 3px;
-        }
-
-        .progress-bar.warning {
-            background: linear-gradient(90deg, #ffa03c, #ff8c1a, #e67e22);
-        }
-
-        /* 時間範囲表示 */
-        .time-range {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
+        .pomodoros-done-label {
+            font-size: 0.75rem;
             color: #806040;
-            margin-bottom: 0.5rem;
+            display: block;
+            margin-bottom: 0.4rem;
         }
+        .pomodoros-icons {
+            display: flex;
+            justify-content: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .pomodoro-done { font-size: 1.4rem; opacity: 0.95; }
+        .pomodoro-pending { font-size: 1.4rem; opacity: 0.25; }
 
         /* ===== メッセージ ===== */
         .message-area {
@@ -914,7 +693,7 @@
     <div class="container">
         <div class="header-icon">☕</div>
         <h1 class="title">Cafe Study Timer</h1>
-        <p class="subtitle">カフェで9:00までの集中時間を</p>
+        <p class="subtitle">カフェでポモドーロ集中</p>
 
         <!-- エール表示エリア -->
         <div class="yell-area" id="yellArea">
@@ -927,39 +706,24 @@
             <span id="statusText">待機中</span>
         </div>
 
-        <div class="timer-card" id="timerCard">
-            <div class="current-time">🕐 現在 <span class="current-time-value" id="currentTime">--:--:--</span></div>
-            <div class="time-label">9:00まで残り</div>
-            <div class="timer-adjust-area">
-                <button class="adjust-btn adjust-up" id="adjustUp" title="時間を増やす (↑)">▲</button>
-                <div class="timer-display" id="timerDisplay">
-                    <div class="flip-group">
-                        <div class="flip-card" id="flipH"><div class="flip-current">2</div></div>
-                    </div>
-                    <span class="flip-colon">:</span>
-                    <div class="flip-group">
-                        <div class="flip-card" id="flipM1"><div class="flip-current">0</div></div>
-                        <div class="flip-card" id="flipM2"><div class="flip-current">0</div></div>
-                    </div>
-                    <span class="flip-colon">:</span>
-                    <div class="flip-group">
-                        <div class="flip-card" id="flipS1"><div class="flip-current">0</div></div>
-                        <div class="flip-card" id="flipS2"><div class="flip-current">0</div></div>
-                    </div>
-                </div>
-                <button class="adjust-btn adjust-down" id="adjustDown" title="時間を減らす (↓)">▼</button>
+        <!-- ポモドーロタイマー（8_Cafe Timer 内に 9_Pomodoro を統合） -->
+        <div class="timer-card pomodoro-card" id="timerCard">
+            <p class="pomodoro-phase-label" id="phaseLabel">🍅 集中（25分）</p>
+            <div class="pomodoro-progress-wrap">
+                <svg class="pomodoro-progress-ring" width="180" height="180" viewBox="0 0 180 180">
+                    <circle class="pomodoro-ring-bg" cx="90" cy="90" r="82" />
+                    <circle class="pomodoro-ring-fill" id="pomodoroProgressRing" cx="90" cy="90" r="82"
+                        stroke-dasharray="515" stroke-dashoffset="0" />
+                </svg>
             </div>
-            <div class="adjust-hint" id="adjustHint">↑↓ 5分単位 ／ Shift+↑↓ 1分単位</div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-            </div>
-            <div class="time-range">
-                <span id="startTimeLabel">-- START</span>
-                <span>9:00 FINISH</span>
-            </div>
+            <div class="pomodoro-display" id="timerDisplay">25:00</div>
             <div class="controls-inline">
                 <button class="btn btn-start" id="startBtn">▶ スタート</button>
                 <button class="btn btn-reset" id="resetBtn">↻ リセット</button>
+            </div>
+            <div class="pomodoros-done">
+                <span class="pomodoros-done-label">完了</span>
+                <div class="pomodoros-icons" id="pomodorosIcons"></div>
             </div>
         </div>
 
@@ -972,21 +736,6 @@
     </div>
 
     <script>
-        // ===== 定数 =====
-        const DEADLINE_HOUR = 9;   // 終了時刻: 9:00
-        const DEADLINE_MIN = 0;
-        const WARNING_SECONDS = 15 * 60;    // 残り15分 = 900秒
-
-        // 現在時刻から締切(9:00)までの残り秒数を計算
-        function calcSecondsUntilDeadline() {
-            const now = new Date();
-            const deadline = new Date(now);
-            deadline.setHours(DEADLINE_HOUR, DEADLINE_MIN, 0, 0);
-            // 既に9:00を過ぎていたら0を返す
-            const diff = Math.floor((deadline - now) / 1000);
-            return Math.max(0, diff);
-        }
-
         // ===== エールメッセージ（7_エールより） =====
         const yellMessages = [
             "一歩前進！未来の自分が今のあなたに感謝しているぞ",
@@ -1085,215 +834,113 @@
         setTimeout(showYell, 1000);
         setInterval(showYell, 60 * 1000);
 
-        // ===== DOM要素 =====
+        // ===== ポモドーロ（9_Pomodoro 統合）定数・DOM =====
+        const WORK_SEC = 25 * 60;
+        const BREAK_SEC = 5 * 60;
+        const TOTAL_POMODOROS = 4;
+        const POMODORO_CIRCUMFERENCE = 2 * Math.PI * 82;
+
         const timerDisplay = document.getElementById('timerDisplay');
-        const progressBar = document.getElementById('progressBar');
         const timerCard = document.getElementById('timerCard');
+        const phaseLabel = document.getElementById('phaseLabel');
+        const pomodoroProgressRing = document.getElementById('pomodoroProgressRing');
         const startBtn = document.getElementById('startBtn');
         const resetBtn = document.getElementById('resetBtn');
         const messageArea = document.getElementById('messageArea');
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
-        const currentTimeEl = document.getElementById('currentTime');
+        const pomodorosIcons = document.getElementById('pomodorosIcons');
 
-        // ===== 現在時刻の更新 =====
-        function updateCurrentTime() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            currentTimeEl.textContent = `${h}:${m}`;
-        }
-        updateCurrentTime();
-        setInterval(updateCurrentTime, 1000);
-
-        const adjustUp = document.getElementById('adjustUp');
-        const adjustDown = document.getElementById('adjustDown');
-        const adjustHint = document.getElementById('adjustHint');
-
-        // ===== 状態管理 =====
-        const initialRemaining = calcSecondsUntilDeadline();
-        let totalSeconds = initialRemaining;
-        let remainingSeconds = initialRemaining;
-        let timerInterval = null;
+        let remainingSec = WORK_SEC;
+        let totalSec = WORK_SEC;
+        let isWork = true;
         let isRunning = false;
-        let warningShown = false;
-        let finishShown = false;
+        let timerId = null;
+        let completedPomodoros = 0;
 
-        // ===== フリップカード要素 =====
-        const flipCards = {
-            h:  document.getElementById('flipH'),
-            m1: document.getElementById('flipM1'),
-            m2: document.getElementById('flipM2'),
-            s1: document.getElementById('flipS1'),
-            s2: document.getElementById('flipS2'),
-        };
-        const prevDigits = { h: '', m1: '', m2: '', s1: '', s2: '' };
+        function updatePomodoroUI() {
+            const m = Math.floor(remainingSec / 60);
+            const s = remainingSec % 60;
+            timerDisplay.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-        function flipDigit(card, newVal) {
-            const cur = card.querySelector('.flip-current');
-            const oldVal = cur.textContent;
-            if (oldVal === newVal) return;
+            const progress = totalSec > 0 ? (totalSec - remainingSec) / totalSec : 1;
+            pomodoroProgressRing.style.strokeDashoffset = POMODORO_CIRCUMFERENCE * (1 - progress);
 
-            // 古いアニメーション要素を除去
-            card.querySelectorAll('.flip-top, .flip-bottom').forEach(el => el.remove());
+            timerCard.classList.remove('work-phase', 'break-phase');
+            timerCard.classList.add(isWork ? 'work-phase' : 'break-phase');
+            phaseLabel.textContent = isWork ? '🍅 集中（25分）' : '☕ 休憩（5分）';
 
-            // 上半分（古い数字が倒れる）
-            const top = document.createElement('div');
-            top.className = 'flip-top';
-            const topDigit = document.createElement('div');
-            topDigit.className = 'flip-digit';
-            topDigit.textContent = oldVal;
-            top.appendChild(topDigit);
+            statusText.textContent = isRunning ? (isWork ? '📖 集中中...' : '☕ 休憩中...') : '待機中';
 
-            // 下半分（新しい数字が起き上がる）
-            const bottom = document.createElement('div');
-            bottom.className = 'flip-bottom';
-            const bottomDigit = document.createElement('div');
-            bottomDigit.className = 'flip-digit';
-            bottomDigit.textContent = newVal;
-            bottom.appendChild(bottomDigit);
-
-            card.appendChild(top);
-            card.appendChild(bottom);
-
-            // 現在の数字を即座に更新
-            cur.textContent = newVal;
-
-            // アニメーション完了後に要素を除去
-            setTimeout(() => {
-                top.remove();
-                bottom.remove();
-            }, 800);
+            pomodorosIcons.innerHTML = '';
+            for (let i = 0; i < TOTAL_POMODOROS; i++) {
+                const span = document.createElement('span');
+                span.className = i < completedPomodoros ? 'pomodoro-done' : 'pomodoro-pending';
+                span.textContent = '🍅';
+                pomodorosIcons.appendChild(span);
+            }
         }
 
-        // ===== タイマー表示更新 =====
-        function updateDisplay() {
-            const hours = Math.floor(remainingSeconds / 3600);
-            const minutes = Math.floor((remainingSeconds % 3600) / 60);
-            const seconds = remainingSeconds % 60;
-
-            const h  = String(hours);
-            const m1 = String(Math.floor(minutes / 10));
-            const m2 = String(minutes % 10);
-            const s1 = String(Math.floor(seconds / 10));
-            const s2 = String(seconds % 10);
-
-            flipDigit(flipCards.h,  h);
-            flipDigit(flipCards.m1, m1);
-            flipDigit(flipCards.m2, m2);
-            flipDigit(flipCards.s1, s1);
-            flipDigit(flipCards.s2, s2);
-
-            // プログレスバー更新
-            const elapsed = totalSeconds - remainingSeconds;
-            const progressPercent = totalSeconds > 0 ? (elapsed / totalSeconds) * 100 : 0;
-            progressBar.style.width = progressPercent + '%';
-
-            // 残り15分の警告
-            if (remainingSeconds <= WARNING_SECONDS && remainingSeconds > 0) {
-                timerDisplay.classList.add('warning');
-                timerCard.classList.add('warning');
-                progressBar.classList.add('warning');
-                statusDot.classList.remove('active');
-                statusDot.classList.add('warning');
-                statusText.textContent = '⚡ ラストスパート！';
-
-                if (!warningShown) {
-                    warningShown = true;
-                    showMessage('🔥 最後の追い込み！残り15分、全力で駆け抜けろ！', 'warning');
-                }
-            }
-
-            // タイマー終了
-            if (remainingSeconds <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
+        function pomodoroTick() {
+            remainingSec--;
+            updatePomodoroUI();
+            if (remainingSec <= 0) {
+                clearInterval(timerId);
+                timerId = null;
                 isRunning = false;
-                timerDisplay.classList.remove('warning');
-                timerDisplay.classList.add('finished');
-                timerCard.classList.remove('warning');
-                progressBar.classList.remove('warning');
-                statusDot.classList.remove('warning', 'active');
-                statusText.textContent = '✅ 完了';
-                startBtn.textContent = '▶ スタート';
-                startBtn.disabled = true;
-
-                if (!finishShown) {
-                    finishShown = true;
-                    showMessage('🎉 お疲れさまでした！2時間の学習、完了です！', 'success');
+                if (isWork) {
+                    completedPomodoros = Math.min(completedPomodoros + 1, TOTAL_POMODOROS);
+                    isWork = false;
+                    remainingSec = BREAK_SEC;
+                    totalSec = BREAK_SEC;
+                    startBtn.textContent = '▶ 休憩スタート';
+                } else {
+                    isWork = true;
+                    remainingSec = WORK_SEC;
+                    totalSec = WORK_SEC;
+                    startBtn.textContent = '▶ スタート';
                 }
+                updatePomodoroUI();
             }
         }
 
-        // ===== メッセージ表示 =====
-        function showMessage(text, type = 'warning') {
-            messageArea.innerHTML = '';
-            const msgEl = document.createElement('div');
-            msgEl.className = `message ${type}`;
-            msgEl.textContent = text;
-            messageArea.appendChild(msgEl);
-        }
-
-        // ===== タイマー開始/一時停止 =====
-        function toggleTimer() {
+        startBtn.addEventListener('click', () => {
             if (isRunning) {
-                // 一時停止
-                clearInterval(timerInterval);
-                timerInterval = null;
+                clearInterval(timerId);
+                timerId = null;
                 isRunning = false;
-                startBtn.textContent = '▶ 再開';
-                statusDot.classList.remove('active', 'warning');
+                startBtn.textContent = isWork ? '▶ スタート' : '▶ 休憩スタート';
                 statusText.textContent = '⏸ 一時停止中';
             } else {
-                // 開始
-                if (remainingSeconds <= 0) return;
+                if (remainingSec <= 0) return;
                 isRunning = true;
                 startBtn.textContent = '⏸ 一時停止';
                 statusDot.classList.add('active');
-                if (remainingSeconds <= WARNING_SECONDS) {
-                    statusDot.classList.remove('active');
-                    statusDot.classList.add('warning');
-                    statusText.textContent = '⚡ ラストスパート！';
-                } else {
-                    statusText.textContent = '📖 学習中...';
-                }
-
-                timerInterval = setInterval(() => {
-                    remainingSeconds--;
-                    updateDisplay();
-                }, 1000);
+                timerId = setInterval(pomodoroTick, 1000);
             }
-        }
+        });
 
-        // ===== リセット =====
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timerInterval = null;
+        resetBtn.addEventListener('click', () => {
+            clearInterval(timerId);
+            timerId = null;
             isRunning = false;
-            warningShown = false;
-            finishShown = false;
-
-            // 現在時刻から9:00までを再計算
-            const recalc = calcSecondsUntilDeadline();
-            totalSeconds = recalc;
-            remainingSeconds = recalc;
-
-            timerDisplay.classList.remove('warning', 'finished');
-            timerCard.classList.remove('warning');
-            progressBar.classList.remove('warning');
-            statusDot.classList.remove('active', 'warning');
-            statusText.textContent = '待機中';
+            isWork = true;
+            remainingSec = WORK_SEC;
+            totalSec = WORK_SEC;
             startBtn.textContent = '▶ スタート';
-            startBtn.disabled = false;
-            messageArea.innerHTML = '';
+            statusDot.classList.remove('active');
+            updatePomodoroUI();
+        });
 
-            updateDisplay();
-
-            // まだ9:00前なら自動スタート
-            if (recalc > 0) {
-                autoStart();
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                startBtn.click();
             }
-        }
+            if (e.code === 'KeyR' && !e.ctrlKey && !e.metaKey) {
+                resetBtn.click();
+            }
+        });
 
         // ===== コーヒー豆の背景パーティクル生成 =====
         function createCoffeeBeans() {
@@ -1310,127 +957,8 @@
             }
         }
 
-        // ===== 時間調整 =====
-        const STEP_NORMAL = 5 * 60;  // 5分
-        const STEP_SHIFT = 1 * 60;   // 1分
-        const MIN_SECONDS = 60;       // 最小1分
-        const MAX_SECONDS = 4 * 60 * 60; // 最大4時間
-
-        function adjustTime(delta) {
-            // タイマー動作中は調整不可
-            if (isRunning) return;
-
-            remainingSeconds = Math.max(MIN_SECONDS, Math.min(MAX_SECONDS, remainingSeconds + delta));
-            totalSeconds = remainingSeconds;
-            warningShown = false;
-            finishShown = false;
-
-            // 終了状態をクリア
-            timerDisplay.classList.remove('warning', 'finished');
-            timerCard.classList.remove('warning');
-            progressBar.classList.remove('warning');
-            startBtn.disabled = false;
-            if (!isRunning) {
-                startBtn.textContent = '▶ スタート';
-                statusDot.classList.remove('warning', 'active');
-                statusText.textContent = '待機中';
-            }
-            messageArea.innerHTML = '';
-
-            updateDisplay();
-            updateAdjustButtons();
-        }
-
-        function updateAdjustButtons() {
-            adjustUp.classList.toggle('disabled', isRunning || remainingSeconds >= MAX_SECONDS);
-            adjustDown.classList.toggle('disabled', isRunning || remainingSeconds <= MIN_SECONDS);
-            adjustHint.classList.toggle('hidden', isRunning);
-        }
-
-        function flashButton(btn) {
-            btn.classList.add('flash');
-            setTimeout(() => btn.classList.remove('flash'), 150);
-        }
-
-        // ===== イベントリスナー =====
-        startBtn.addEventListener('click', () => { toggleTimer(); updateAdjustButtons(); });
-        resetBtn.addEventListener('click', () => { resetTimer(); updateAdjustButtons(); });
-
-        adjustUp.addEventListener('click', () => {
-            adjustTime(STEP_NORMAL);
-            flashButton(adjustUp);
-        });
-        adjustDown.addEventListener('click', () => {
-            adjustTime(-STEP_NORMAL);
-            flashButton(adjustDown);
-        });
-
-        // キーボードショートカット
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                if (!startBtn.disabled) { toggleTimer(); updateAdjustButtons(); }
-            }
-            if (e.code === 'KeyR' && !e.ctrlKey && !e.metaKey) {
-                resetTimer();
-                updateAdjustButtons();
-            }
-            if (e.code === 'ArrowUp') {
-                e.preventDefault();
-                const step = e.shiftKey ? STEP_SHIFT : STEP_NORMAL;
-                adjustTime(step);
-                flashButton(adjustUp);
-            }
-            if (e.code === 'ArrowDown') {
-                e.preventDefault();
-                const step = e.shiftKey ? STEP_SHIFT : STEP_NORMAL;
-                adjustTime(-step);
-                flashButton(adjustDown);
-            }
-        });
-
-        // ===== 自動スタート =====
-        function autoStart() {
-            if (remainingSeconds <= 0 || isRunning) return;
-            isRunning = true;
-            startBtn.textContent = '⏸ 一時停止';
-            statusDot.classList.add('active');
-            if (remainingSeconds <= WARNING_SECONDS) {
-                statusDot.classList.remove('active');
-                statusDot.classList.add('warning');
-                statusText.textContent = '⚡ ラストスパート！';
-            } else {
-                statusText.textContent = '📖 学習中...';
-            }
-            timerInterval = setInterval(() => {
-                remainingSeconds--;
-                updateDisplay();
-            }, 1000);
-            updateAdjustButtons();
-        }
-
-        // ===== 初期化 =====
-        // 開始時刻ラベルを現在時刻で設定
-        (function setStartLabel() {
-            const now = new Date();
-            const h = now.getHours();
-            const m = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('startTimeLabel').textContent = `${h}:${m} START`;
-        })();
-
-        updateDisplay();
-        updateAdjustButtons();
+        updatePomodoroUI();
         createCoffeeBeans();
-
-        // 起動時: 9:00前なら自動カウントダウン開始、過ぎていたら完了表示
-        if (initialRemaining > 0) {
-            autoStart();
-        } else {
-            timerDisplay.classList.add('finished');
-            statusText.textContent = '✅ 完了';
-            startBtn.disabled = true;
-            showMessage('🎉 本日の学習時間（〜9:00）は終了しました！', 'success');
-        }
 
         // ===== プルトゥリフレッシュ =====
         (function() {
