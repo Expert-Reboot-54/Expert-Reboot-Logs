@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ポモドーロタイマー</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Hiragino Sans', sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            padding: max(2rem, env(safe-area-inset-top)) max(2rem, env(safe-area-inset-right)) max(2rem, env(safe-area-inset-bottom)) max(2rem, env(safe-area-inset-left));
+            transition: background 0.6s ease, color 0.6s ease;
+        }
+
+        /* 作業中 */
+        body.work {
+            background: linear-gradient(135deg, #1a0a0a 0%, #2d1515 40%, #3d1a1a 100%);
+            color: #ffd0d0;
+        }
+
+        /* 休憩中 */
+        body.break {
+            background: linear-gradient(135deg, #0a1a0f 0%, #0f2a18 40%, #153d22 100%);
+            color: #c8f0d8;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .title {
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        body.work .title { color: #ff8080; }
+        body.break .title { color: #80e0a0; }
+
+        .phase-label {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-bottom: 2rem;
+        }
+
+        .timer-wrap {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        body.work .timer-wrap { border-color: rgba(255, 100, 100, 0.2); }
+        body.break .timer-wrap { border-color: rgba(100, 220, 140, 0.2); }
+
+        .timer-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 1.5rem;
+        }
+        .timer-display .flip-group { display: flex; gap: 4px; }
+        .timer-display .flip-colon {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            font-weight: 800;
+            padding: 0 4px;
+            opacity: 0.85;
+        }
+        body.work .timer-display .flip-colon { color: #ff9090; }
+        body.break .timer-display .flip-colon { color: #90f0b0; }
+        .timer-display .flip-card {
+            position: relative;
+            width: clamp(2.5rem, 12vw, 4.5rem);
+            height: clamp(3.5rem, 16vw, 6rem);
+            background: linear-gradient(180deg, #2d1515 0%, #251010 49.9%, #1e0c0c 50%, #180a0a 100%);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+            overflow: hidden;
+            perspective: 300px;
+        }
+        body.break .timer-display .flip-card {
+            background: linear-gradient(180deg, #0f2a18 0%, #0c2214 49.9%, #091a10 50%, #061408 100%);
+            border-color: rgba(100, 220, 140, 0.2);
+        }
+        .timer-display .flip-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 5;
+            transform: translateY(-0.5px);
+        }
+        .timer-display .flip-current {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2.5rem, 12vw, 4.2rem);
+            font-weight: 800;
+            color: #ff9090;
+            font-variant-numeric: tabular-nums;
+        }
+        body.break .timer-display .flip-current { color: #90f0b0; }
+        .timer-display .flip-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            z-index: 10;
+            transform-origin: bottom center;
+            background: linear-gradient(180deg, #2d1515 0%, #251010 100%);
+            border-radius: 8px 8px 0 0;
+            animation: flipDown 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+        }
+        body.break .timer-display .flip-top { background: linear-gradient(180deg, #0f2a18 0%, #0c2214 100%); }
+        .timer-display .flip-top .flip-digit {
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2.5rem, 12vw, 4.2rem);
+            font-weight: 800;
+            color: #ff9090;
+            font-variant-numeric: tabular-nums;
+        }
+        body.break .timer-display .flip-top .flip-digit { color: #90f0b0; }
+        .timer-display .flip-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            z-index: 8;
+            transform-origin: top center;
+            background: linear-gradient(180deg, #1e0c0c 0%, #180a0a 100%);
+            border-radius: 0 0 8px 8px;
+            transform: rotateX(90deg);
+            animation: flipUp 0.5s 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+        }
+        body.break .timer-display .flip-bottom { background: linear-gradient(180deg, #091a10 0%, #061408 100%); }
+        .timer-display .flip-bottom .flip-digit {
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            top: -100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2.5rem, 12vw, 4.2rem);
+            font-weight: 800;
+            color: #ff9090;
+            font-variant-numeric: tabular-nums;
+        }
+        body.break .timer-display .flip-bottom .flip-digit { color: #90f0b0; }
+        @keyframes flipDown {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(-90deg); }
+        }
+        @keyframes flipUp {
+            0% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        .progress-ring-wrap {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.08);
+            stroke-width: 8;
+        }
+
+        body.work .progress-ring-fill {
+            fill: none;
+            stroke: #ff8080;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s linear;
+        }
+
+        body.break .progress-ring-fill {
+            fill: none;
+            stroke: #80e0a0;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s linear;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #e85555 0%, #c03030 100%);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(200, 50, 50, 0.35);
+        }
+
+        body.break .btn-start {
+            background: linear-gradient(135deg, #30c060 0%, #208840 100%);
+            box-shadow: 0 8px 24px rgba(50, 180, 80, 0.35);
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(200, 50, 50, 0.45);
+        }
+
+        body.break .btn-start:hover {
+            box-shadow: 0 12px 32px rgba(50, 180, 80, 0.45);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.06);
+            color: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .pomodoros {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .pomodoros-label {
+            margin-bottom: 0.5rem;
+        }
+
+        .pomodoros-icons {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pomodoro-done {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .pomodoro-pending {
+            font-size: 1.5rem;
+            opacity: 0.25;
+        }
+
+        @media (max-width: 480px) {
+            .controls { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 260px; }
+        }
+    </style>
+</head>
+<body class="work" id="bodyEl">
+    <div class="container">
+        <h1 class="title">🍅 ポモドーロタイマー</h1>
+        <p class="phase-label" id="phaseLabel">集中（25分）</p>
+
+        <div class="timer-wrap">
+            <div class="progress-ring-wrap">
+                <svg class="progress-ring" width="200" height="200" viewBox="0 0 200 200">
+                    <circle class="progress-ring-bg" cx="100" cy="100" r="90" />
+                    <circle class="progress-ring-fill" id="progressRing" cx="100" cy="100" r="90"
+                        stroke-dasharray="565.48" stroke-dashoffset="0" />
+                </svg>
+            </div>
+            <div class="timer-display" id="timerDisplay">
+                <div class="flip-group">
+                    <div class="flip-card" id="flipM1"><div class="flip-current">2</div></div>
+                    <div class="flip-card" id="flipM2"><div class="flip-current">5</div></div>
+                </div>
+                <span class="flip-colon">:</span>
+                <div class="flip-group">
+                    <div class="flip-card" id="flipS1"><div class="flip-current">0</div></div>
+                    <div class="flip-card" id="flipS2"><div class="flip-current">0</div></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-start" id="startBtn">▶ スタート</button>
+                <button class="btn btn-reset" id="resetBtn">↻ リセット</button>
+            </div>
+        </div>
+
+        <div class="pomodoros">
+            <div class="pomodoros-label">完了したポモドーロ</div>
+            <div class="pomodoros-icons" id="pomodorosIcons">
+                <span class="pomodoro-pending">🍅</span>
+                <span class="pomodoro-pending">🍅</span>
+                <span class="pomodoro-pending">🍅</span>
+                <span class="pomodoro-pending">🍅</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WORK_SEC = 25 * 60;
+        const BREAK_SEC = 5 * 60;
+        const TOTAL_POMODOROS = 4;
+        const circumference = 2 * Math.PI * 90;
+
+        const bodyEl = document.getElementById('bodyEl');
+        const phaseLabel = document.getElementById('phaseLabel');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const progressRing = document.getElementById('progressRing');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const pomodorosIcons = document.getElementById('pomodorosIcons');
+        const flipCards = {
+            m1: document.getElementById('flipM1'),
+            m2: document.getElementById('flipM2'),
+            s1: document.getElementById('flipS1'),
+            s2: document.getElementById('flipS2'),
+        };
+
+        let remainingSec = WORK_SEC;
+        let totalSec = WORK_SEC;
+        let isWork = true;
+        let isRunning = false;
+        let timerId = null;
+        let completedPomodoros = 0;
+
+        function flipDigit(card, newVal) {
+            const cur = card.querySelector('.flip-current');
+            const oldVal = cur.textContent;
+            if (oldVal === newVal) return;
+
+            card.querySelectorAll('.flip-top, .flip-bottom').forEach(el => el.remove());
+
+            const top = document.createElement('div');
+            top.className = 'flip-top';
+            const topDigit = document.createElement('div');
+            topDigit.className = 'flip-digit';
+            topDigit.textContent = oldVal;
+            top.appendChild(topDigit);
+
+            const bottom = document.createElement('div');
+            bottom.className = 'flip-bottom';
+            const bottomDigit = document.createElement('div');
+            bottomDigit.className = 'flip-digit';
+            bottomDigit.textContent = newVal;
+            bottom.appendChild(bottomDigit);
+
+            card.appendChild(top);
+            card.appendChild(bottom);
+            cur.textContent = newVal;
+
+            setTimeout(() => { top.remove(); bottom.remove(); }, 800);
+        }
+
+        function updateUI() {
+            const m = Math.floor(remainingSec / 60);
+            const s = remainingSec % 60;
+            const m1 = String(Math.floor(m / 10));
+            const m2 = String(m % 10);
+            const s1 = String(Math.floor(s / 10));
+            const s2 = String(s % 10);
+
+            flipDigit(flipCards.m1, m1);
+            flipDigit(flipCards.m2, m2);
+            flipDigit(flipCards.s1, s1);
+            flipDigit(flipCards.s2, s2);
+
+            const progress = totalSec > 0 ? (totalSec - remainingSec) / totalSec : 1;
+            progressRing.style.strokeDashoffset = circumference * (1 - progress);
+
+            if (isWork) {
+                bodyEl.className = 'work';
+                phaseLabel.textContent = '集中（25分）';
+            } else {
+                bodyEl.className = 'break';
+                phaseLabel.textContent = '休憩（5分）';
+            }
+
+            pomodorosIcons.innerHTML = '';
+            for (let i = 0; i < TOTAL_POMODOROS; i++) {
+                const span = document.createElement('span');
+                span.className = i < completedPomodoros ? 'pomodoro-done' : 'pomodoro-pending';
+                span.textContent = '🍅';
+                pomodorosIcons.appendChild(span);
+            }
+        }
+
+        function tick() {
+            remainingSec--;
+            updateUI();
+            if (remainingSec <= 0) {
+                clearInterval(timerId);
+                timerId = null;
+                isRunning = false;
+                if (isWork) {
+                    completedPomodoros = Math.min(completedPomodoros + 1, TOTAL_POMODOROS);
+                    isWork = false;
+                    remainingSec = BREAK_SEC;
+                    totalSec = BREAK_SEC;
+                    startBtn.textContent = '▶ 休憩スタート';
+                } else {
+                    isWork = true;
+                    remainingSec = WORK_SEC;
+                    totalSec = WORK_SEC;
+                    startBtn.textContent = '▶ スタート';
+                }
+                updateUI();
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (isRunning) {
+                clearInterval(timerId);
+                timerId = null;
+                isRunning = false;
+                startBtn.textContent = isWork ? '▶ スタート' : '▶ 休憩スタート';
+            } else {
+                if (remainingSec <= 0) return;
+                isRunning = true;
+                startBtn.textContent = '⏸ 一時停止';
+                timerId = setInterval(tick, 1000);
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            clearInterval(timerId);
+            timerId = null;
+            isRunning = false;
+            isWork = true;
+            remainingSec = WORK_SEC;
+            totalSec = WORK_SEC;
+            startBtn.textContent = '▶ スタート';
+            updateUI();
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
