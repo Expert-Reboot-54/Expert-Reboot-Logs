@@ -160,7 +160,7 @@
             background: linear-gradient(180deg, #1e0c0c 0%, #180a0a 100%);
             border-radius: 0 0 8px 8px;
             transform: rotateX(90deg);
-            animation: flipUp 0.5s 0.25s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+            animation: flipUp 0.5s 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
         }
         body.break .timer-display .flip-bottom { background: linear-gradient(180deg, #091a10 0%, #061408 100%); }
         .timer-display .flip-bottom .flip-digit {
@@ -395,7 +395,7 @@
             card.appendChild(bottom);
             cur.textContent = newVal;
 
-            setTimeout(() => { top.remove(); bottom.remove(); }, 800);
+            setTimeout(() => { top.remove(); bottom.remove(); }, 1100);
         }
 
         function updateUI() {
