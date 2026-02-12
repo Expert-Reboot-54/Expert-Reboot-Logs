@@ -1126,6 +1126,17 @@
         updatePomodoroUI();
         createCoffeeBeans();
 
+        // 起動後（プルダウン更新含む）に自動でタイマー開始
+        setTimeout(() => {
+            if (!isRunning && remainingSec > 0) {
+                isRunning = true;
+                startBtn.textContent = '⏸ 一時停止';
+                statusDot.classList.add('active');
+                statusText.textContent = isWork ? '📖 集中中...' : '☕ 休憩中...';
+                timerId = setInterval(pomodoroTick, 1000);
+            }
+        }, 800);
+
         // ===== プルトゥリフレッシュ =====
         (function() {
             const ptr = document.getElementById('ptrIndicator');
