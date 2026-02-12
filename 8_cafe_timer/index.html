@@ -1048,9 +1048,8 @@
             card.appendChild(top);
             card.appendChild(bottom);
 
-            // 上半分: めくれた瞬間に数字を切り替え（0.45sで上フラップが消える直前に更新）
-            // 下半分: めくり終わった後に数字が変わるように、.flip-current は上フラップ終了タイミングで更新
-            setTimeout(() => { cur.textContent = newVal; }, 450);
+            // 上半分: めくれ下がるのと同時に数字が変わるよう、上フラップが消える前（0.3s）に更新
+            setTimeout(() => { cur.textContent = newVal; }, 300);
             setTimeout(() => { top.remove(); bottom.remove(); }, 800);
         }
 
