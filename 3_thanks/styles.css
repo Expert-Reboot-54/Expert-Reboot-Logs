@@ -1,0 +1,319 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ffeef8 0%, #e8f5ff 50%, #fff5e8 100%);
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* 雲のアニメーション */
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50px;
+    opacity: 0.6;
+    animation: float 20s infinite ease-in-out;
+}
+
+.cloud:before,
+.cloud:after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50px;
+}
+
+.cloud1 {
+    width: 100px;
+    height: 40px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.cloud1:before {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+    left: 10px;
+}
+
+.cloud1:after {
+    width: 60px;
+    height: 40px;
+    top: -15px;
+    right: 10px;
+}
+
+.cloud2 {
+    width: 120px;
+    height: 50px;
+    top: 60%;
+    left: 70%;
+    animation-delay: -5s;
+}
+
+.cloud2:before {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+    left: 15px;
+}
+
+.cloud2:after {
+    width: 70px;
+    height: 50px;
+    top: -20px;
+    right: 15px;
+}
+
+.cloud3 {
+    width: 80px;
+    height: 35px;
+    top: 40%;
+    left: 50%;
+    animation-delay: -10s;
+}
+
+.cloud3:before {
+    width: 40px;
+    height: 40px;
+    top: -20px;
+    left: 10px;
+}
+
+.cloud3:after {
+    width: 50px;
+    height: 35px;
+    top: -15px;
+    right: 10px;
+}
+
+.cloud4 {
+    width: 90px;
+    height: 38px;
+    top: 80%;
+    left: 20%;
+    animation-delay: -15s;
+}
+
+.cloud4:before {
+    width: 45px;
+    height: 45px;
+    top: -22px;
+    left: 10px;
+}
+
+.cloud4:after {
+    width: 55px;
+    height: 38px;
+    top: -18px;
+    right: 10px;
+}
+
+.cloud5 {
+    width: 110px;
+    height: 45px;
+    top: 10%;
+    left: 60%;
+    animation-delay: -8s;
+}
+
+.cloud5:before {
+    width: 55px;
+    height: 55px;
+    top: -27px;
+    left: 12px;
+}
+
+.cloud5:after {
+    width: 65px;
+    height: 45px;
+    top: -20px;
+    right: 12px;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px);
+    }
+    25% {
+        transform: translateY(-30px) translateX(20px);
+    }
+    50% {
+        transform: translateY(-15px) translateX(-15px);
+    }
+    75% {
+        transform: translateY(-25px) translateX(10px);
+    }
+}
+
+/* 泡のアニメーション */
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    animation: bubble-float 15s infinite ease-in-out;
+}
+
+.bubble1 {
+    width: 30px;
+    height: 30px;
+    left: 15%;
+    bottom: -30px;
+    animation-delay: 0s;
+}
+
+.bubble2 {
+    width: 20px;
+    height: 20px;
+    left: 35%;
+    bottom: -20px;
+    animation-delay: -2s;
+}
+
+.bubble3 {
+    width: 25px;
+    height: 25px;
+    left: 55%;
+    bottom: -25px;
+    animation-delay: -4s;
+}
+
+.bubble4 {
+    width: 35px;
+    height: 35px;
+    left: 75%;
+    bottom: -35px;
+    animation-delay: -6s;
+}
+
+.bubble5 {
+    width: 18px;
+    height: 18px;
+    left: 25%;
+    bottom: -18px;
+    animation-delay: -8s;
+}
+
+.bubble6 {
+    width: 28px;
+    height: 28px;
+    left: 65%;
+    bottom: -28px;
+    animation-delay: -10s;
+}
+
+@keyframes bubble-float {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(30px);
+        opacity: 0;
+    }
+}
+
+/* メッセージコンテナ */
+.container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.message {
+    text-align: center;
+    animation: fadeInUp 1.5s ease-out;
+}
+
+.thanks-text {
+    font-size: 5rem;
+    font-weight: 300;
+    color: #6b5b95;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 8px rgba(107, 91, 149, 0.2);
+    letter-spacing: 0.1em;
+    animation: gentle-pulse 3s ease-in-out infinite;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: #8b7fa8;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gentle-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .thanks-text {
+        font-size: 3rem;
+    }
+    
+    .subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .cloud {
+        transform: scale(0.7);
+    }
+}
+
+@media (max-width: 480px) {
+    .thanks-text {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+}

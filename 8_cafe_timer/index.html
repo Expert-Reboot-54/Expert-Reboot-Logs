@@ -313,8 +313,8 @@
         .pomodoro-card.break-phase .pomodoro-phase-label { color: #90e0a8; }
 
         .pomodoro-progress-wrap {
-            width: 180px;
-            height: 180px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 0.5rem;
         }
 
@@ -853,10 +853,10 @@
         <div class="timer-card pomodoro-card" id="timerCard">
             <p class="pomodoro-phase-label" id="phaseLabel">🍅 集中（25分）</p>
             <div class="pomodoro-progress-wrap">
-                <svg class="pomodoro-progress-ring" width="180" height="180" viewBox="0 0 180 180">
-                    <circle class="pomodoro-ring-bg" cx="90" cy="90" r="82" />
-                    <circle class="pomodoro-ring-fill" id="pomodoroProgressRing" cx="90" cy="90" r="82"
-                        stroke-dasharray="515" stroke-dashoffset="0" />
+                <svg class="pomodoro-progress-ring" width="120" height="120" viewBox="0 0 120 120">
+                    <circle class="pomodoro-ring-bg" cx="60" cy="60" r="55" />
+                    <circle class="pomodoro-ring-fill" id="pomodoroProgressRing" cx="60" cy="60" r="55"
+                        stroke-dasharray="346" stroke-dashoffset="0" />
                 </svg>
             </div>
             <button class="pomodoro-arrow-btn pomodoro-arrow-up" id="pomodoroArrowUp" title="時間を増やす">▲</button>
@@ -993,7 +993,7 @@
         const WORK_SEC = 25 * 60;
         const BREAK_SEC = 5 * 60;
         const TOTAL_POMODOROS = 4;
-        const POMODORO_CIRCUMFERENCE = 2 * Math.PI * 82;
+        const POMODORO_CIRCUMFERENCE = 2 * Math.PI * 55;
         const POMODORO_MIN_SEC = 5 * 60;   // 5分
         const POMODORO_MAX_SEC = 60 * 60;  // 60分
         const POMODORO_STEP = 5 * 60;      // 5分刻み

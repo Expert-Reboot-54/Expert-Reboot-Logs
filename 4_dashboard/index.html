@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI学習ロードマップ - ダッシュボード</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background">
+        <div class="grid-overlay"></div>
+    </div>
+    
+    <div class="container">
+        <div class="dashboard">
+            <!-- 左側：レベル表示 -->
+            <div class="level-panel">
+                <div class="panel-header">
+                    <h2>学習ステータス</h2>
+                </div>
+                <div class="level-content">
+                    <div class="level-display">
+                        <div class="level-badge">
+                            <span class="level-label">レベル</span>
+                            <span class="level-number">1</span>
+                        </div>
+                        <div class="level-status">習得中</div>
+                    </div>
+                    
+                    <div class="exp-section">
+                        <div class="exp-label">
+                            <span>経験値</span>
+                            <span class="exp-value">350 / 500</span>
+                        </div>
+                        <div class="exp-bar">
+                            <div class="exp-fill" style="width: 70%"></div>
+                            <div class="exp-glow"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon">✓</div>
+                            <div class="stat-info">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">完了</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">⟳</div>
+                            <div class="stat-info">
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">進行中</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">○</div>
+                            <div class="stat-info">
+                                <div class="stat-value">5</div>
+                                <div class="stat-label">未着手</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右側：チェックリスト -->
+            <div class="checklist-panel">
+                <div class="panel-header">
+                    <h2>学習タスク</h2>
+                </div>
+                <div class="checklist-content">
+                    <div class="checklist-item completed">
+                        <div class="check-icon">✓</div>
+                        <div class="check-content">
+                            <div class="check-title">タイピング練習</div>
+                            <div class="check-status completed-status">完了</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item in-progress">
+                        <div class="check-icon">⟳</div>
+                        <div class="check-content">
+                            <div class="check-title">Cursor基礎</div>
+                            <div class="check-status in-progress-status">進行中</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item in-progress">
+                        <div class="check-icon">⟳</div>
+                        <div class="check-content">
+                            <div class="check-title">HTML/CSS基礎</div>
+                            <div class="check-status in-progress-status">進行中</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item pending">
+                        <div class="check-icon">○</div>
+                        <div class="check-content">
+                            <div class="check-title">JavaScript基礎</div>
+                            <div class="check-status pending-status">未着手</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item pending">
+                        <div class="check-icon">○</div>
+                        <div class="check-content">
+                            <div class="check-title">React基礎</div>
+                            <div class="check-status pending-status">未着手</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item pending">
+                        <div class="check-icon">○</div>
+                        <div class="check-content">
+                            <div class="check-title">API連携</div>
+                            <div class="check-status pending-status">未着手</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item pending">
+                        <div class="check-icon">○</div>
+                        <div class="check-content">
+                            <div class="check-title">データベース基礎</div>
+                            <div class="check-status pending-status">未着手</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item pending">
+                        <div class="check-icon">○</div>
+                        <div class="check-content">
+                            <div class="check-title">デプロイ実践</div>
+                            <div class="check-status pending-status">未着手</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

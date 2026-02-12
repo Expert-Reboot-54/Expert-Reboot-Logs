@@ -187,8 +187,8 @@
         }
 
         .progress-ring-wrap {
-            width: 200px;
-            height: 200px;
+            width: 134px;
+            height: 134px;
             margin: 0 auto 1.5rem;
             position: relative;
         }
@@ -308,10 +308,10 @@
 
         <div class="timer-wrap">
             <div class="progress-ring-wrap">
-                <svg class="progress-ring" width="200" height="200" viewBox="0 0 200 200">
-                    <circle class="progress-ring-bg" cx="100" cy="100" r="90" />
-                    <circle class="progress-ring-fill" id="progressRing" cx="100" cy="100" r="90"
-                        stroke-dasharray="565.48" stroke-dashoffset="0" />
+                <svg class="progress-ring" width="134" height="134" viewBox="0 0 134 134">
+                    <circle class="progress-ring-bg" cx="67" cy="67" r="60" />
+                    <circle class="progress-ring-fill" id="progressRing" cx="67" cy="67" r="60"
+                        stroke-dasharray="377" stroke-dashoffset="0" />
                 </svg>
             </div>
             <div class="timer-display" id="timerDisplay">
@@ -347,7 +347,7 @@
         const WORK_SEC = 25 * 60;
         const BREAK_SEC = 5 * 60;
         const TOTAL_POMODOROS = 4;
-        const circumference = 2 * Math.PI * 90;
+        const circumference = 2 * Math.PI * 60;
 
         const bodyEl = document.getElementById('bodyEl');
         const phaseLabel = document.getElementById('phaseLabel');

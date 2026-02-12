@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感謝とAI | AI Driven School - 未来への第一歩</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 背景パーティクル -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- AIネットワーク背景 -->
+    <canvas id="network-canvas" class="network-canvas"></canvas>
+    
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <!-- ヒーローセクション -->
+        <section class="hero">
+            <div class="hero-content">
+                <!-- モットー -->
+                <div class="motto-section fade-in-up">
+                    <p class="motto-text">AIと一体化して、誰かに感謝される仕事をすること</p>
+                </div>
+                
+                <div class="hero-badge pulse">
+                    <span class="badge-text">2026年3月スタート</span>
+                </div>
+                <h1 class="hero-title">
+                    <span class="title-line neon-text">AI×感謝</span>
+                    <span class="title-line title-gradient-delay">未来への第一歩</span>
+                </h1>
+                <p class="hero-subtitle fade-in-up">
+                    AI Driven Schoolで学び、AIを使って人々を助ける未来へ
+                </p>
+                <div class="hero-cta fade-in-up-delay">
+                    <div class="cta-button">
+                        <span class="button-text">未来を切り拓く</span>
+                        <div class="button-glow"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-elements">
+                    <div class="floating-circle circle-1"></div>
+                    <div class="floating-circle circle-2"></div>
+                    <div class="floating-circle circle-3"></div>
+                    <div class="ai-icon">🤖</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ビジョンセクション -->
+        <section class="vision">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-accent">AIで</span>
+                    <span class="title-main">人々を助ける未来</span>
+                </h2>
+                <p class="section-description">
+                    3月から始まる新しい学びの旅で、<br>
+                    AIの力を人々の幸せのために使う未来を描きます
+                </p>
+            </div>
+            
+            <div class="vision-grid">
+                <div class="vision-card card-1">
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon">🎓</div>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <h3 class="card-title">学びの始まり</h3>
+                    <p class="card-description">
+                        AI Driven Schoolで<br>
+                        最新のAI技術を学び、<br>
+                        実践的なスキルを身につける
+                    </p>
+                    <div class="card-gradient"></div>
+                </div>
+                
+                <div class="vision-card card-2">
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon">💡</div>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <h3 class="card-title">イノベーション</h3>
+                    <p class="card-description">
+                        AIの可能性を探求し、<br>
+                        新しいソリューションを<br>
+                        創造していく
+                    </p>
+                    <div class="card-gradient"></div>
+                </div>
+                
+                <div class="vision-card card-3">
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon">🤝</div>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <h3 class="card-title">感謝される仕事</h3>
+                    <p class="card-description">
+                        AIを使って人々の課題を解決し、<br>
+                        感謝される仕事を<br>
+                        実現していく
+                    </p>
+                    <div class="card-gradient"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- タイムラインセクション -->
+        <section class="timeline">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-accent">未来への</span>
+                    <span class="title-main">タイムライン</span>
+                </h2>
+            </div>
+            
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-item item-1">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2026年3月</div>
+                        <h3 class="timeline-title">AI Driven School スタート</h3>
+                        <p class="timeline-description">
+                            新しい学びの旅が始まります。<br>
+                            ワクワクと期待に満ちた日々が待っています。
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item item-2">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2026年8月〜</div>
+                        <h3 class="timeline-title">スキルアップと実践</h3>
+                        <p class="timeline-description">
+                            学んだことを実践し、<br>
+                            プロジェクトを通じて成長していきます。
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item item-3">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">未来</div>
+                        <h3 class="timeline-title">AIで人々を助ける</h3>
+                        <p class="timeline-description">
+                            AIの力を活用して、<br>
+                            多くの人々に感謝される仕事を実現します。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 勇気のメッセージセクション -->
+        <section class="courage-message spa-gradient">
+            <div class="courage-content">
+                <div class="courage-icon">💪</div>
+                <h2 class="courage-title">3月の自分へ、そして今の自分へ</h2>
+                <div class="courage-text-wrapper">
+                    <p class="courage-text">
+                        2026年3月。あなたは今、人生の大きな転換点に立っています。AI Driven Schoolへの入学という決断は、単なる学習の始まりではありません。それは、あなたが自分の可能性を信じ、未来を切り拓くための勇気ある第一歩なのです。
+                    </p>
+                    <p class="courage-text">
+                        不安はあるでしょう。54歳という年齢で、新しい技術を学ぶことへの不安。55万円という投資が本当に報われるのかという不安。周りの人たちがどう思うかという不安。でも、その不安こそが、あなたが正しい道を歩んでいる証なのです。成長とは、常に未知の領域への挑戦から始まります。
+                    </p>
+                    <p class="courage-text">
+                        あなたは既に、このページを見ているという事実だけで、大きな勇気を示しています。学びたいという気持ち、変わりたいという意志、そして誰かの役に立ちたいという純粋な想い。それらは全て、あなたの中に既に存在している力です。AI Driven Schoolは、その力を引き出し、形にするための場所です。
+                    </p>
+                    <p class="courage-text">
+                        3月から始まる日々は、決して楽なものではないかもしれません。新しい概念を理解するのに時間がかかることもあるでしょう。コードが思うように動かない日もあるでしょう。でも、その一つ一つの困難を乗り越えるたびに、あなたは確実に成長しています。そして、その成長は、必ず誰かの役に立ち、感謝される仕事へとつながっていきます。
+                    </p>
+                    <p class="courage-text">
+                        覚えておいてください。あなたの年齢は、弱点ではなく、強みです。これまでの人生経験、人との関わり方、問題解決の経験、そして何より、学び続ける姿勢。これらは全て、AIと組み合わせることで、他にはない価値を生み出す武器になります。
+                    </p>
+                    <p class="courage-text">
+                        3月の自分へ。今、この瞬間に決断したあなたを、私は誇りに思います。そして、3月から学び始めるあなたは、きっと今の自分に感謝するでしょう。なぜなら、その一歩を踏み出したからこそ、新しい世界が開けるからです。
+                    </p>
+                    <p class="courage-text highlight">
+                        今この瞬間、あなたは既に未来を変える力を持っています。3月が来たら、その力を存分に発揮してください。そして、AIと一体化して、誰かに感謝される仕事を実現してください。あなたなら、必ずできます。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 投資と成功のセクション -->
+        <section class="investment-section">
+            <div class="investment-content">
+                <div class="investment-icon">💰</div>
+                <h2 class="investment-title">55万円の投資が、100倍の価値に</h2>
+                <div class="investment-grid">
+                    <div class="investment-card investment-card-1">
+                        <div class="investment-number">55万円</div>
+                        <h3 class="investment-card-title">今の投資</h3>
+                        <p class="investment-card-description">
+                            学費として投資する55万円。<br>
+                            これは単なる支出ではありません。<br>
+                            未来への種まきです。
+                        </p>
+                    </div>
+                    <div class="investment-arrow">→</div>
+                    <div class="investment-card investment-card-2">
+                        <div class="investment-number success-glow">5,500万円</div>
+                        <h3 class="investment-card-title">未来の価値</h3>
+                        <p class="investment-card-description">
+                            AIスキルを身につけ、<br>
+                            感謝される仕事を実現すれば、<br>
+                            投資は100倍の価値に変わります。
+                        </p>
+                    </div>
+                </div>
+                <div class="investment-message">
+                    <p class="investment-text">
+                        55万円は、単なる数字ではありません。それは、あなたが自分の未来を信じ、行動を起こした証です。AI Driven Schoolでの学びを通じて、あなたは技術だけでなく、問題解決の思考、創造性、そして何より「誰かの役に立つ」という価値観を身につけます。
+                    </p>
+                    <p class="investment-text">
+                        そして、その学びが実を結ぶとき、55万円は5,500万円、いやそれ以上の価値になります。なぜなら、あなたが創り出す価値は、お金では測れないものだからです。人々の感謝、社会への貢献、そして何より、自分自身の成長。これらは全て、55万円という投資から生まれる、計り知れない価値なのです。
+                    </p>
+                    <p class="investment-text highlight-text">
+                        今、この瞬間に投資を決めたあなたは、既に成功への道を歩み始めています。3月から始まる学びは、その成功への第一歩。そして、その一歩一歩が、やがて大きな成果となって、あなたの元に返ってくるでしょう。
+                    </p>
+                </div>
+            </div>
+            <div class="investment-glow"></div>
+        </section>
+
+        <!-- メッセージセクション -->
+        <section class="message">
+            <div class="message-content">
+                <div class="message-icon">✨</div>
+                <h2 class="message-title">感謝とAIで未来を創る</h2>
+                <p class="message-text">
+                    3月から始まるAI Driven Schoolでの学びは、<br>
+                    単なる技術習得ではありません。<br>
+                    <br>
+                    AIを使って人々を助け、<br>
+                    感謝される仕事を実現するための<br>
+                    第一歩です。<br>
+                    <br>
+                    明るく希望に満ちた未来へ、<br>
+                    共に歩んでいきましょう。
+                </p>
+            </div>
+            <div class="message-glow"></div>
+        </section>
+
+        <!-- フッター -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p class="footer-text">感謝とAI | AI Driven School</p>
+                <p class="footer-year">2026</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

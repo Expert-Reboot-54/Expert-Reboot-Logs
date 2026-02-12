@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reboot! - Expert-Reboot-54</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            color: #ffffff;
+        }
+
+        /* 背景のアニメーション */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .bg-circle:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-circle:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 5s;
+        }
+
+        .bg-circle:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            bottom: 10%;
+            left: 50%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* メインコンテンツ */
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            max-width: 900px;
+            width: 90%;
+        }
+
+        .title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: #a0a0a0;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        /* Rebootボタン */
+        .reboot-button {
+            position: relative;
+            padding: 1.5rem 4rem;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            color: #ffffff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .reboot-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .reboot-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .reboot-button:hover::before {
+            left: 100%;
+        }
+
+        .reboot-button:active {
+            transform: translateY(-2px);
+        }
+
+        /* メッセージ表示エリア */
+        .message-container {
+            margin-top: 3rem;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            line-height: 1.8;
+            color: #ffffff;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+            max-width: 100%;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* パーティクル */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: particle-rise 2s ease-out forwards;
+        }
+
+        @keyframes particle-rise {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0);
+            }
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .reboot-button {
+                padding: 1.2rem 3rem;
+            }
+            
+            .message {
+                padding: 1.5rem;
+            }
+        }
+
+        /* カウンター */
+        .counter {
+            margin-top: 2rem;
+            font-size: 1rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        .counter-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin: 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+    </div>
+
+    <div class="container">
+        <h1 class="title">Expert-Reboot-54</h1>
+        <p class="subtitle">あなたの再起動を、ここから</p>
+        
+        <button class="reboot-button" id="rebootBtn">
+            Reboot!
+        </button>
+
+        <div class="message-container">
+            <div class="message" id="message" style="display: none;"></div>
+        </div>
+
+        <div class="counter">
+            今日の再起動回数: <span class="counter-number" id="counter">0</span>
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            // コア・バリュー
+            "一歩前進！未来の自分が今のあなたに感謝しているぞ",
+            "55万円の投資は、最高の未来へのチケットだ（30回の歩みと共に）",
+            "技術で余白を、仕組みで感謝を。",
+            "完璧主義を捨てろ。70%運用で継続することが最大の勝利だ。",
+            "あなたは今、AIを使われる側から『使いこなす側』へ進化した。",
+            "タイピング練習完了！あなたの指先はAIと同期し始めている。",
+            
+            // 年齢と可能性
+            "54歳は終わりじゃない。ここからが本当のスタートだ。",
+            "人生100年時代。あなたにはまだ46年もある！",
+            "遅すぎることなど何もない。今日が人生で一番若い日だ。",
+            "年齢は数字に過ぎない。情熱こそが全てを決める。",
+            "54年間の経験が、今こそ最強の武器になる。",
+            
+            // 継続と習慣
+            "今日の1コミットが、1年後の1000コミットになる。",
+            "継続は天才を超える。あなたは毎日進化している。",
+            "小さな積み重ねが、やがて大きな山になる。",
+            "1日30分の学習が、1年で182時間の成長を生む。",
+            "昨日より1%成長すれば、1年後には37倍になる。",
+            
+            // 技術習得
+            "コードは書くたびに上手くなる。今日も一行、書こう。",
+            "エラーは成長のチャンス。デバッグ力こそが真の実力だ。",
+            "Gitのコミットログが、あなたの成長の証だ。",
+            "関数が理解できた瞬間、世界が広がる。",
+            "CSS一つマスターするごとに、表現力が10倍になる。",
+            
+            // AI時代の生き方
+            "AIは敵じゃない。最高の相棒だ。",
+            "プロンプトを制する者が、AI時代を制する。",
+            "あなたはもう、AIアーキテクトへの道を歩き始めている。",
+            "ChatGPTとの対話が、あなたの思考を研ぎ澄ます。",
+            "AIに使われるな。AIを使いこなせ。",
+            
+            // 挑戦と勇気
+            "不安は成長の証。怖いからこそ、価値がある。",
+            "失敗を恐れるな。それは成功への通過点だ。",
+            "今日のチャレンジが、明日の自信になる。",
+            "リスクを取らないことが、最大のリスクだ。",
+            "勇気とは、恐怖がないことじゃない。恐怖と共に進むことだ。",
+            
+            // 投資の価値
+            "自己投資は、唯一絶対に裏切らない投資だ。",
+            "30回の講座は、30段のステップ。確実に登れる。",
+            "学びに使ったお金は、必ず何倍にもなって返ってくる。",
+            "今日の投資が、10年後の資産になる。",
+            "知識と技術は、誰にも奪えない財産だ。",
+            
+            // 家族・人との絆
+            "あなたの挑戦が、誰かの希望になる。",
+            "家族のために、まず自分が輝け。",
+            "学ぶ姿勢は、最高の教育だ。",
+            "感謝の仕組みを作ることが、最高の恩返しだ。",
+            "あなたの背中を見て、誰かが勇気をもらっている。",
+            
+            // 日々の進歩
+            "今日理解できたこと一つが、明日の武器になる。",
+            "エラーが一つ解決できた。それは立派な成長だ。",
+            "変数の命名に悩んだ時間も、すべて経験値だ。",
+            "ドキュメントを読む力が、プロへの近道だ。",
+            "質問する勇気が、理解を10倍加速させる。",
+            
+            // マインドセット
+            "完璧を目指すな。完成を目指せ。",
+            "比較するなら、昨日の自分とだけ。",
+            "できないことより、できるようになったことに注目しよう。",
+            "焦らない。自分のペースで、確実に。",
+            "休むことも、成長の一部だ。",
+            
+            // 具体的な技術目標
+            "HTML、CSS、JavaScriptの三種の神器を手に入れろ。",
+            "Reactを理解すれば、フロントエンドの世界が開ける。",
+            "Pythonは、AIエンジニアの共通言語だ。",
+            "Dockerが使えれば、環境構築で悩むことはない。",
+            "SQLを学べば、データの海を自由に泳げる。",
+            
+            // 時間管理
+            "朝の30分は、夜の2時間に匹敵する。",
+            "細切れ時間を制する者が、時間を制する。",
+            "集中の15分は、ダラダラの3時間を超える。",
+            "タイマーをセットして、今日も全力で駆け抜けろ。",
+            "時間は作るもの。待っていても来ない。",
+            
+            // 健康とバランス
+            "ThinkPadと共に、今日も快適に学ぼう。",
+            "デニーズのカフェオレが、あなたの創造性を高める。",
+            "適度な休憩が、最高のパフォーマンスを生む。",
+            "目を休めて、明日も学び続けよう。",
+            "心身の健康が、学びの土台だ。",
+            
+            // プロジェクト進行
+            "Expert-Reboot-54、順調に起動中！",
+            "今日のログが、未来の資産になる。",
+            "GitHubの草を育てることが、習慣を育てる。",
+            "ポートフォリオの一つ一つが、あなたの実力の証明だ。",
+            "このプロジェクトが、あなたの人生を変える。",
+            
+            // 学習方法
+            "写経は最高の学習法。手を動かせば、理解が深まる。",
+            "アウトプットしてこそ、真の理解が生まれる。",
+            "教えることは、最高の学びだ。",
+            "エラーメッセージは、最高の教科書だ。",
+            "公式ドキュメントを読む力が、自走力を生む。",
+            
+            // キャリアビジョン
+            "あなたは今、未来の自分を創造している。",
+            "半年後、コードを書く自分を想像してみろ。ワクワクするだろ？",
+            "1年後、あなたはフルスタックエンジニアになっている。",
+            "3年後、あなたは誰かにAIを教えている。",
+            "5年後、あなたは自分のサービスで社会貢献している。",
+            
+            // モチベーション維持
+            "今日も自分を褒めよう。よくやっている。",
+            "小さな達成感を積み重ねることが、継続の秘訣だ。",
+            "楽しむことを忘れるな。学びは冒険だ。",
+            "仲間と共に学べば、成長は加速する。",
+            "あなたの目標は、必ず実現する。信じ続けろ。",
+            
+            // 実践的アドバイス
+            "まず動かせ。最適化はその後だ。",
+            "console.logは、デバッグの最強の味方だ。",
+            "Stack Overflowは、エンジニアの宝箱だ。",
+            "コピペするな。理解してから書け。",
+            "変数名に悩む時間も、成長の時間だ。",
+            
+            // 夢と希望
+            "あなたのコードが、誰かの人生を変える日が来る。",
+            "技術で社会に貢献する、その日は近い。",
+            "余白のある人生を、技術で実現しよう。",
+            "自由な働き方を、自分の手で創り出せ。",
+            "あなたの夢は、必ず叶う。諦めなければ。",
+            
+            // 感謝と振り返り
+            "今日も学べたことに、感謝しよう。",
+            "支えてくれる人たちに、感謝を形にしよう。",
+            "過去の自分に感謝し、未来の自分に投資しよう。",
+            "学べる環境に感謝し、最大限活用しよう。",
+            "この瞬間、挑戦できることに感謝しよう。"
+        ];
+
+        const rebootBtn = document.getElementById('rebootBtn');
+        const messageEl = document.getElementById('message');
+        const counterEl = document.getElementById('counter');
+        let count = 0;
+
+        // ローカルストレージからカウントを取得
+        const today = new Date().toDateString();
+        const savedDate = localStorage.getItem('rebootDate');
+        if (savedDate === today) {
+            count = parseInt(localStorage.getItem('rebootCount')) || 0;
+            counterEl.textContent = count;
+        } else {
+            localStorage.setItem('rebootDate', today);
+            localStorage.setItem('rebootCount', '0');
+        }
+
+        rebootBtn.addEventListener('click', function(e) {
+            // カウンター更新
+            count++;
+            counterEl.textContent = count;
+            localStorage.setItem('rebootCount', count.toString());
+
+            // ランダムメッセージ選択
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            // メッセージ表示
+            messageEl.style.display = 'none';
+            setTimeout(() => {
+                messageEl.textContent = randomMessage;
+                messageEl.style.display = 'block';
+                messageEl.style.animation = 'none';
+                setTimeout(() => {
+                    messageEl.style.animation = 'fadeInUp 0.8s ease forwards';
+                }, 10);
+            }, 100);
+
+            // パーティクル生成
+            createParticles(e);
+
+            // ボタンアニメーション
+            rebootBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                rebootBtn.style.transform = '';
+            }, 100);
+        });
+
+        function createParticles(e) {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe'];
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // ランダムな形状
+                const shapes = ['●', '★', '✦', '◆', '◉'];
+                particle.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                
+                // ランダムな色とサイズ
+                const size = Math.random() * 20 + 10;
+                particle.style.fontSize = size + 'px';
+                particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 開始位置（ボタンの位置）
+                const rect = rebootBtn.getBoundingClientRect();
+                particle.style.left = (rect.left + rect.width / 2) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+                
+                // ランダムな移動方向
+                const angle = (Math.random() * 360) * Math.PI / 180;
+                const distance = Math.random() * 200 + 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                
+                document.body.appendChild(particle);
+                
+                // アニメーション終了後に削除
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+        }
+
+        // 初回メッセージ
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                messageEl.textContent = 'さあ、今日も再起動の時間だ！';
+                messageEl.style.display = 'block';
+                messageEl.style.animation = 'fadeInUp 0.8s ease forwards';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
