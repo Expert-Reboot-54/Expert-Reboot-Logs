@@ -256,7 +256,8 @@
 
         .title {
             font-family: 'Cormorant Garamond', 'Yu Mincho', 'Hiragino Mincho ProN', serif;
-            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            /* スマホ縦でも大きめに（2rem〜）、幅に応じてさらに拡大 */
+            font-size: clamp(2rem, 7vw, 3.2rem);
             font-weight: 600;
             margin-bottom: 0.3rem;
             background: linear-gradient(135deg, #d4a574 0%, #e8c9a0 40%, #f0d9b5 70%, #c4956a 100%);
@@ -265,9 +266,16 @@
             background-clip: text;
             letter-spacing: 0.12em;
         }
-        @media (orientation: landscape) and (min-width: 568px) {
+        /* 幅480px以上（横画面・タブレットなど）でタイトルをさらに大きく */
+        @media (min-width: 480px) {
             .title {
-                font-size: clamp(2rem, 7vw, 5rem);
+                font-size: clamp(2.2rem, 6vw, 4.5rem);
+            }
+        }
+        /* 幅768px以上（PC・大画面）でさらに大きく */
+        @media (min-width: 768px) {
+            .title {
+                font-size: clamp(2.5rem, 5vw, 5.5rem);
             }
         }
 
