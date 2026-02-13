@@ -249,6 +249,8 @@
             justify-content: center;
             gap: 0.4rem;
             margin-bottom: 0.25rem;
+            flex-wrap: nowrap;
+            white-space: nowrap;
         }
 
         .header-icon {
@@ -265,6 +267,8 @@
 
         .header-title-row .title {
             margin-bottom: 0;
+            white-space: nowrap;
+            min-width: 0;
         }
 
         .title {
@@ -798,6 +802,9 @@
         @media (max-width: 480px) {
             .container {
                 padding: 0 1.5rem 1.5rem 1.5rem;
+            }
+            .header-title-row .title {
+                font-size: clamp(1.35rem, 5vw, 2rem);
             }
             .timer-card {
                 padding: 1rem 1.5rem 2rem 1.5rem;
