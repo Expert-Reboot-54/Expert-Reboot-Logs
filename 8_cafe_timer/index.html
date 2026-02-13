@@ -242,16 +242,29 @@
             width: 90%;
         }
 
-        /* ヘッダー */
+        /* ヘッダー：タイトルとコーヒーアイコンを横並び */
+        .header-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-bottom: 0.25rem;
+        }
+
         .header-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            line-height: 1;
+            flex-shrink: 0;
             animation: iconPulse 3s ease-in-out infinite;
         }
 
         @keyframes iconPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
+        }
+
+        .header-title-row .title {
+            margin-bottom: 0;
         }
 
         .title {
@@ -867,8 +880,10 @@
 
     <!-- メインコンテンツ -->
     <div class="container">
-        <div class="header-icon">☕</div>
-        <h1 class="title">Cafe Study Timer</h1>
+        <div class="header-title-row">
+            <span class="header-icon">☕</span>
+            <h1 class="title">Cafe Study Timer</h1>
+        </div>
         <p class="subtitle">カフェでポモドーロ集中</p>
 
         <!-- エール表示エリア -->
