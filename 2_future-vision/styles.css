@@ -1208,6 +1208,13 @@ section {
 
 /* レスポンシブ */
 @media (max-width: 768px) {
+    /* スマホ: コンテナを画面幅いっぱいに（左右パディングを最小に） */
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        max-width: 100%;
+    }
+
     .hero {
         flex-direction: column;
         text-align: center;
@@ -1266,18 +1273,35 @@ section {
     .mobile-br {
         display: block;
     }
-    
+
+    /* 勇気のメッセージ: 長文を横幅いっぱいに */
     .courage-content {
-        padding: var(--spacing-md);
+        max-width: 100%;
+        padding: var(--spacing-md) 0.5rem;
+        width: 100%;
     }
     
     .courage-text {
         font-size: 1rem;
+        max-width: 100%;
     }
     
     .courage-text.highlight {
         font-size: 1.1rem;
         padding: var(--spacing-sm);
+    }
+
+    /* 投資セクション: 長文を横幅いっぱいに */
+    .investment-content {
+        max-width: 100%;
+        padding: var(--spacing-lg) 0.5rem;
+        width: 100%;
+    }
+
+    .investment-message {
+        max-width: 100%;
+        padding: var(--spacing-md) 0.5rem;
+        width: 100%;
     }
     
     .investment-grid {
@@ -1295,11 +1319,28 @@ section {
     
     .investment-text {
         font-size: 1rem;
+        max-width: 100%;
     }
     
     .investment-text.highlight-text {
         font-size: 1.1rem;
         padding: var(--spacing-sm);
+    }
+
+    /* メッセージセクション: 横幅いっぱいに */
+    .message-content {
+        max-width: 100%;
+        padding: var(--spacing-lg) 0.5rem;
+        width: 100%;
+    }
+
+    .message-text {
+        max-width: 100%;
+    }
+
+    /* セクション説明文も横幅いっぱいに */
+    .section-description {
+        max-width: 100%;
     }
 }
 
