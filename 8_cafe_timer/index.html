@@ -798,6 +798,28 @@
             50% { opacity: 0.4; }
         }
 
+        /* ===== 残り0秒時の赤点滅オーバーレイ ===== */
+        .zero-flash-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(180, 40, 40, 0.7);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .zero-flash-overlay.flash {
+            animation: zeroFlash 1.8s ease-out;
+        }
+        @keyframes zeroFlash {
+            0% { opacity: 0; }
+            15% { opacity: 0.75; }
+            30% { opacity: 0.2; }
+            45% { opacity: 0.6; }
+            60% { opacity: 0.15; }
+            75% { opacity: 0.4; }
+            100% { opacity: 0; }
+        }
+
         /* ===== レスポンシブ ===== */
         @media (max-width: 480px) {
             .container {
@@ -817,6 +839,9 @@
     </style>
 </head>
 <body>
+
+    <!-- 残り0秒時の赤点滅用オーバーレイ -->
+    <div class="zero-flash-overlay" id="zeroFlashOverlay" aria-hidden="true"></div>
 
     <!-- 背景アイスカフェラテ SVG -->
     <div class="bg-latte">
@@ -1138,6 +1163,13 @@
             remainingSec--;
             updatePomodoroUI();
             if (remainingSec <= 0) {
+                const overlay = document.getElementById('zeroFlashOverlay');
+                if (overlay) {
+                    overlay.classList.remove('flash');
+                    overlay.offsetHeight;
+                    overlay.classList.add('flash');
+                    setTimeout(() => overlay.classList.remove('flash'), 1900);
+                }
                 clearInterval(timerId);
                 timerId = null;
                 isRunning = false;
