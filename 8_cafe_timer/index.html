@@ -265,6 +265,11 @@
             background-clip: text;
             letter-spacing: 0.12em;
         }
+        @media (orientation: landscape) and (min-width: 568px) {
+            .title {
+                font-size: clamp(2rem, 7vw, 5rem);
+            }
+        }
 
         .subtitle {
             font-size: clamp(0.85rem, 2vw, 1rem);
@@ -646,7 +651,7 @@
 
         /* ===== エール ===== */
         .yell-area {
-            min-height: 2.5rem;
+            min-height: 4.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -657,6 +662,12 @@
             font-size: clamp(0.85rem, 2vw, 1rem);
             line-height: 1.7;
             padding: 0.7rem 1.4rem;
+            min-height: 3.4em;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             background: rgba(102, 126, 234, 0.08);
             backdrop-filter: blur(10px);
             border-radius: 14px;
