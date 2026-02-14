@@ -229,9 +229,24 @@ this.config = {
 プルリクエスト歓迎！
 
 1. Fork the repo
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch
+
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+
+3. Commit your changes
+
+   ```bash
+   git commit -m 'Add some AmazingFeature'
+   ```
+
+4. Push to the branch
+
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+
 5. Open a Pull Request
 
 ---

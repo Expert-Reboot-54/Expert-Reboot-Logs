@@ -13,11 +13,19 @@
             min-height: 100dvh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             padding: 2rem;
             padding: max(2rem, env(safe-area-inset-top)) max(2rem, env(safe-area-inset-right)) max(2rem, env(safe-area-inset-bottom)) max(2rem, env(safe-area-inset-left));
             transition: background 0.6s ease, color 0.6s ease;
+        }
+
+        .main-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 420px;
         }
 
         /* 作業中 */
@@ -297,24 +305,28 @@
 
         /* Notionに記録 */
         .notion-section {
-            margin-top: 2.5rem;
-            padding-top: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1.25rem;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             width: 100%;
+            max-width: 420px;
+            flex-shrink: 0;
         }
 
         .notion-link {
-            color: inherit;
-            font-size: 0.95rem;
-            opacity: 0.85;
+            display: inline-block;
+            color: #ffa0a0;
+            font-size: 1rem;
+            font-weight: 500;
             text-decoration: none;
             border-bottom: 1px dashed currentColor;
             cursor: pointer;
             transition: opacity 0.2s ease;
+            padding: 0.25em 0;
         }
 
         .notion-link:hover {
-            opacity: 1;
+            opacity: 0.9;
         }
 
         body.work .notion-link { color: #ffa0a0; }
@@ -396,11 +408,12 @@
     </style>
 </head>
 <body class="work" id="bodyEl">
-    <div class="container">
-        <h1 class="title">🍅 ポモドーロタイマー</h1>
-        <p class="phase-label" id="phaseLabel">集中（25分）</p>
+    <div class="main-center">
+        <div class="container">
+            <h1 class="title">🍅 ポモドーロタイマー</h1>
+            <p class="phase-label" id="phaseLabel">集中（25分）</p>
 
-        <div class="timer-wrap">
+            <div class="timer-wrap">
             <div class="progress-ring-wrap">
                 <svg class="progress-ring" width="134" height="134" viewBox="0 0 134 134">
                     <circle class="progress-ring-bg" cx="67" cy="67" r="60" />
@@ -435,15 +448,16 @@
                 <span class="pomodoro-pending">🍅</span>
             </div>
         </div>
+        </div>
+    </div>
 
-        <div class="notion-section">
-            <a href="#" class="notion-link" id="notionLink" role="button">Notionに記録</a>
-            <div class="notion-record-panel" id="notionRecordPanel" aria-hidden="true">
-                <label for="notionRecordInput">メモ（Notionに保存する内容）</label>
-                <textarea id="notionRecordInput" placeholder="今日の作業メモや振り返りを入力…"></textarea>
-                <div class="notion-record-actions">
-                    <button type="button" class="btn-close-panel" id="closeNotionPanel">閉じる</button>
-                </div>
+    <div class="notion-section">
+        <a href="#" class="notion-link" id="notionLink" role="button">Notionに記録</a>
+        <div class="notion-record-panel" id="notionRecordPanel" aria-hidden="true">
+            <label for="notionRecordInput">メモ（Notionに保存する内容）</label>
+            <textarea id="notionRecordInput" placeholder="今日の作業メモや振り返りを入力…"></textarea>
+            <div class="notion-record-actions">
+                <button type="button" class="btn-close-panel" id="closeNotionPanel">閉じる</button>
             </div>
         </div>
     </div>
