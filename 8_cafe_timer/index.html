@@ -475,6 +475,30 @@
             background: rgba(212, 165, 116, 0.35);
             color: #2c1810;
         }
+        .notion-record-panel .copy-hint {
+            font-size: 0.75rem;
+            color: #806040;
+            margin-bottom: 0.5rem;
+        }
+        .btn-copy-panel, .btn-voice-panel {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            background: rgba(212, 165, 116, 0.25);
+            color: #5c4028;
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .btn-copy-panel:hover, .btn-voice-panel:hover {
+            background: rgba(212, 165, 116, 0.4);
+            color: #2c1810;
+        }
+        .btn-voice-panel.recording {
+            background: rgba(200, 80, 80, 0.3);
+            border-color: rgba(200, 80, 80, 0.5);
+            color: #8a2020;
+        }
 
         /* ポモドーロ用フリップクロック */
         .pomodoro-display {
@@ -1025,9 +1049,12 @@
         <div class="below-timer-link">
             <a href="#" class="notion-open-link" id="notionLink" role="button">Notion</a>
             <div class="notion-record-panel" id="notionRecordPanel" aria-hidden="true">
-                <label for="notionRecordInput">メモ（Notionに保存する内容）</label>
-                <textarea id="notionRecordInput" placeholder="今日の作業メモや振り返りを入力…"></textarea>
+                <label for="notionRecordInput">メモ（コピーしてNotionに貼り付け）</label>
+                <p class="copy-hint">入力 or 音声 → コピー → Notionの所定の列に貼り付け</p>
+                <textarea id="notionRecordInput" placeholder="入力するか、マイクで話してからコピー…"></textarea>
                 <div class="notion-record-actions">
+                    <button type="button" class="btn-voice-panel" id="voiceInputBtn" title="音声入力">🎤 音声入力</button>
+                    <button type="button" class="btn-copy-panel" id="copyToClipboardBtn">📋 コピー</button>
                     <button type="button" class="btn-close-panel" id="closeNotionPanel">閉じる</button>
                 </div>
             </div>
@@ -1408,13 +1435,16 @@
             }, { passive: true });
         })();
 
-        // ===== Notionに記録：リンククリックで入力パネルを表示（直接記録） =====
+        // ===== Notionメモ：入力・音声・コピー（手動でNotionに貼り付け） =====
         (function() {
             const notionLink = document.getElementById('notionLink');
             const notionRecordPanel = document.getElementById('notionRecordPanel');
             const notionRecordInput = document.getElementById('notionRecordInput');
             const closeNotionPanel = document.getElementById('closeNotionPanel');
+            const copyBtn = document.getElementById('copyToClipboardBtn');
+            const voiceBtn = document.getElementById('voiceInputBtn');
             if (!notionLink || !notionRecordPanel) return;
+
             notionLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 notionRecordPanel.classList.add('is-open');
@@ -1425,6 +1455,78 @@
                 notionRecordPanel.classList.remove('is-open');
                 notionRecordPanel.setAttribute('aria-hidden', 'true');
             });
+
+            // コピー：テキストエリアの内容をクリップボードにコピー
+            if (copyBtn && notionRecordInput) {
+                copyBtn.addEventListener('click', function() {
+                    const text = notionRecordInput.value.trim();
+                    if (!text) {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText('').catch(function() {});
+                        }
+                        return;
+                    }
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(function() {
+                            copyBtn.textContent = '✓ コピーした';
+                            setTimeout(function() { copyBtn.textContent = '📋 コピー'; }, 1500);
+                        }).catch(function() {
+                            fallbackCopy(notionRecordInput);
+                        });
+                    } else {
+                        fallbackCopy(notionRecordInput);
+                    }
+                });
+            }
+            function fallbackCopy(el) {
+                el.select();
+                try {
+                    document.execCommand('copy');
+                    copyBtn.textContent = '✓ コピーした';
+                    setTimeout(function() { copyBtn.textContent = '📋 コピー'; }, 1500);
+                } catch (err) {}
+            }
+
+            // 音声入力（Web Speech API）
+            if (voiceBtn && notionRecordInput) {
+                var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (SpeechRecognition) {
+                    var recognition = new SpeechRecognition();
+                    recognition.lang = 'ja-JP';
+                    recognition.continuous = true;
+                    recognition.interimResults = true;
+                    voiceBtn.addEventListener('click', function() {
+                        if (voiceBtn.classList.contains('recording')) {
+                            recognition.stop();
+                            voiceBtn.classList.remove('recording');
+                            voiceBtn.textContent = '🎤 音声入力';
+                            return;
+                        }
+                        voiceBtn.classList.add('recording');
+                        voiceBtn.textContent = '⏹ 停止';
+                        var finalText = notionRecordInput.value;
+                        recognition.onresult = function(e) {
+                            var interim = '';
+                            for (var i = e.resultIndex; i < e.results.length; i++) {
+                                var t = e.results[i][0].transcript;
+                                if (e.results[i].isFinal) finalText += t; else interim += t;
+                            }
+                            notionRecordInput.value = finalText + interim;
+                        };
+                        recognition.onend = function() {
+                            if (voiceBtn.classList.contains('recording')) {
+                                recognition.start();
+                            } else {
+                                voiceBtn.textContent = '🎤 音声入力';
+                            }
+                        };
+                        recognition.start();
+                    });
+                } else {
+                    voiceBtn.textContent = '🎤 音声非対応';
+                    voiceBtn.disabled = true;
+                }
+            }
         })();
 
         // ===== Service Worker 登録 =====
