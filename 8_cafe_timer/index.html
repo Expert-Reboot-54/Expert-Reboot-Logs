@@ -414,6 +414,20 @@
             color: #d4a574;
             text-decoration: underline;
         }
+        .below-timer-link a.notion-open-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .below-timer-link a.notion-open-link:hover {
+            text-decoration: none;
+            opacity: 0.85;
+        }
+        .notion-logo-icon {
+            width: 22px;
+            height: 22px;
+            display: block;
+        }
 
         /* Notionに記録（直接記録パネル） */
         .notion-record-panel {
@@ -460,17 +474,22 @@
         .notion-record-actions {
             display: flex;
             gap: 0.75rem;
-            justify-content: flex-end;
+            width: 100%;
         }
-        .btn-close-panel {
-            padding: 0.5rem 1rem;
+        .notion-record-actions .btn-copy-panel,
+        .notion-record-actions .btn-close-panel {
+            flex: 1;
+            min-width: 0;
+            padding: 0.6rem 0.5rem;
             font-size: 0.9rem;
-            background: rgba(212, 165, 116, 0.2);
-            color: #8a6542;
-            border: 1px solid rgba(212, 165, 116, 0.4);
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.2s ease, color 0.2s ease;
+        }
+        .btn-close-panel {
+            background: rgba(212, 165, 116, 0.2);
+            color: #8a6542;
+            border: 1px solid rgba(212, 165, 116, 0.4);
         }
         .btn-close-panel:hover {
             background: rgba(212, 165, 116, 0.35);
@@ -482,14 +501,9 @@
             margin-bottom: 0.5rem;
         }
         .btn-copy-panel {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
             background: rgba(212, 165, 116, 0.25);
             color: #5c4028;
             border: 1px solid rgba(212, 165, 116, 0.4);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease;
         }
         .btn-copy-panel:hover {
             background: rgba(212, 165, 116, 0.4);
@@ -1040,7 +1054,7 @@
         </div>
 
         <div class="below-timer-link">
-            <a href="#" class="notion-open-link" id="notionLink" role="button">Notion</a>
+            <a href="#" class="notion-open-link" id="notionLink" role="button" title="Notionに記録"><svg class="notion-logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M4.459 4.208c.746.462 1.279.925 1.278 1.388-.001.463-.529 1.116-1.571 1.947L2.09 8.463c-.319.231-.552.464-.69.694-.138.231-.207.578-.207 1.039v84.585c0 .462.209.924.627 1.386.418.462.836.693 1.254.693h.418c.418 0 .836-.231 1.254-.693.418-.462.627-.924.627-1.386V7.301c0-.231.069-.462.207-.693.138-.231.371-.462.69-.693l1.278-.924c1.042-.831 1.569-1.484 1.571-1.947.002-.463-.532-.926-1.278-1.388zM18.686 4.208c-.746.462-1.279.925-1.278 1.388.001.463.529 1.116 1.571 1.947l1.278.924c.319.231.552.464.69.694.138.231.207.578.207 1.039v84.585c0 .462-.209.924-.627 1.386-.418.462-.836.693-1.254.693h-.418c-.418 0-.836-.231-1.254-.693-.418-.462-.627-.924-.627-1.386V7.301c0-.231.069-.462.207-.693.138-.231.371-.462.69-.693l1.278-.924c1.042-.831 1.569-1.484 1.571-1.947.002-.463-.532-.926-1.278-1.388z"/></svg></a>
             <div class="notion-record-panel" id="notionRecordPanel" aria-hidden="true">
                 <label for="notionRecordInput">メモ（コピーしてNotionに貼り付け）</label>
                 <p class="copy-hint">入力 → コピー → Notionの所定の列に貼り付け</p>
@@ -1448,6 +1462,7 @@
             closeNotionPanel.addEventListener('click', function() {
                 notionRecordPanel.classList.remove('is-open');
                 notionRecordPanel.setAttribute('aria-hidden', 'true');
+                if (notionRecordInput) notionRecordInput.value = '';
             });
 
             // コピー：テキストエリアの内容をクリップボードにコピー
