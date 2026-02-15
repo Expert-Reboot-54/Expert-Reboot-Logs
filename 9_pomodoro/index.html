@@ -383,22 +383,37 @@
         .notion-record-actions {
             display: flex;
             gap: 0.75rem;
-            justify-content: flex-end;
+            width: 100%;
         }
-
-        .btn-close-panel {
-            padding: 0.5rem 1rem;
+        .notion-record-actions .btn-copy-panel,
+        .notion-record-actions .btn-close-panel {
+            flex: 1;
+            min-width: 0;
+            padding: 0.6rem 0.5rem;
             font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.08);
-            color: inherit;
-            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.2s ease;
         }
 
+        .btn-close-panel {
+            background: rgba(255, 255, 255, 0.08);
+            color: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
         .btn-close-panel:hover {
             background: rgba(255, 255, 255, 0.14);
+        }
+
+        .btn-copy-panel {
+            background: rgba(255, 255, 255, 0.1);
+            color: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-copy-panel:hover {
+            background: rgba(255, 255, 255, 0.18);
         }
 
         @media (max-width: 480px) {
@@ -457,6 +472,7 @@
             <label for="notionRecordInput">メモ（Notionに保存する内容）</label>
             <textarea id="notionRecordInput" placeholder="今日の作業メモや振り返りを入力…"></textarea>
             <div class="notion-record-actions">
+                <button type="button" class="btn-copy-panel" id="copyToClipboardBtn">📋 コピー</button>
                 <button type="button" class="btn-close-panel" id="closeNotionPanel">閉じる</button>
             </div>
         </div>
@@ -599,23 +615,56 @@
             updateUI();
         });
 
-        // Notionに記録：リンククリックで入力欄を表示
-        const notionLink = document.getElementById('notionLink');
-        const notionRecordPanel = document.getElementById('notionRecordPanel');
-        const notionRecordInput = document.getElementById('notionRecordInput');
-        const closeNotionPanel = document.getElementById('closeNotionPanel');
+        // Notionに記録：入力欄表示・コピー・閉じる
+        (function() {
+            const notionLink = document.getElementById('notionLink');
+            const notionRecordPanel = document.getElementById('notionRecordPanel');
+            const notionRecordInput = document.getElementById('notionRecordInput');
+            const closeNotionPanel = document.getElementById('closeNotionPanel');
+            const copyBtn = document.getElementById('copyToClipboardBtn');
+            if (!notionLink || !notionRecordPanel) return;
 
-        notionLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            notionRecordPanel.classList.add('is-open');
-            notionRecordPanel.setAttribute('aria-hidden', 'false');
-            notionRecordInput.focus();
-        });
+            notionLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                notionRecordPanel.classList.add('is-open');
+                notionRecordPanel.setAttribute('aria-hidden', 'false');
+                if (notionRecordInput) notionRecordInput.focus();
+            });
 
-        closeNotionPanel.addEventListener('click', () => {
-            notionRecordPanel.classList.remove('is-open');
-            notionRecordPanel.setAttribute('aria-hidden', 'true');
-        });
+            if (closeNotionPanel) {
+                closeNotionPanel.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    notionRecordPanel.classList.remove('is-open');
+                    notionRecordPanel.setAttribute('aria-hidden', 'true');
+                    if (notionRecordInput) notionRecordInput.value = '';
+                });
+            }
+
+            if (copyBtn && notionRecordInput) {
+                copyBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const text = notionRecordInput.value.trim();
+                    if (!text) return;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            copyBtn.textContent = '✓ コピーした';
+                            setTimeout(() => { copyBtn.textContent = '📋 コピー'; }, 1500);
+                        }).catch(() => { fallbackCopy(); });
+                    } else {
+                        fallbackCopy();
+                    }
+                });
+            }
+            function fallbackCopy() {
+                notionRecordInput.select();
+                notionRecordInput.setSelectionRange(0, 99999);
+                try {
+                    document.execCommand('copy');
+                    copyBtn.textContent = '✓ コピーした';
+                    setTimeout(() => { copyBtn.textContent = '📋 コピー'; }, 1500);
+                } catch (err) {}
+            }
+        })();
 
         updateUI();
     </script>
