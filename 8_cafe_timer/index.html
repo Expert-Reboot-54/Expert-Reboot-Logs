@@ -388,7 +388,7 @@
         }
         .pomodoro-ring-bg {
             fill: none;
-            stroke: rgba(255, 255, 255, 0.08);
+            stroke: rgba(212, 165, 116, 0.12);
             stroke-width: 8;
         }
         .pomodoro-ring-fill {
@@ -398,8 +398,9 @@
             stroke-linecap: round;
             transition: stroke-dashoffset 0.5s linear;
         }
-        .pomodoro-card.work-phase .pomodoro-ring-fill { stroke: #ff8080; }
-        .pomodoro-card.break-phase .pomodoro-ring-fill { stroke: #80e0a0; }
+        /* カフェラテを想起する色：集中時=ラテブラウン、休憩時=クリーム */
+        .pomodoro-card.work-phase .pomodoro-ring-fill { stroke: #c4956a; }
+        .pomodoro-card.break-phase .pomodoro-ring-fill { stroke: #e8c9a0; }
 
         .below-timer-link {
             margin-top: 1rem;
