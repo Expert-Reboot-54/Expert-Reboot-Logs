@@ -437,10 +437,11 @@
         }
         .notion-record-panel textarea {
             width: 100%;
-            min-height: 100px;
+            min-height: 240px;
             padding: 0.75rem 1rem;
             font-family: inherit;
             font-size: 0.95rem;
+            line-height: 1.5;
             color: #2c1810;
             background: rgba(255, 248, 240, 0.95);
             border: 1px solid rgba(212, 165, 116, 0.4);
@@ -1043,7 +1044,7 @@
             <div class="notion-record-panel" id="notionRecordPanel" aria-hidden="true">
                 <label for="notionRecordInput">メモ（コピーしてNotionに貼り付け）</label>
                 <p class="copy-hint">入力 → コピー → Notionの所定の列に貼り付け</p>
-                <textarea id="notionRecordInput" placeholder="入力してからコピー…"></textarea>
+                <textarea id="notionRecordInput" rows="12" placeholder="入力してからコピー…（何行でも入力できます）"></textarea>
                 <div class="notion-record-actions">
                     <button type="button" class="btn-copy-panel" id="copyToClipboardBtn">📋 コピー</button>
                     <button type="button" class="btn-close-panel" id="closeNotionPanel">閉じる</button>
