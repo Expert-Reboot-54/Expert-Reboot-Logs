@@ -281,7 +281,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 0.12em;
+            letter-spacing: -0.02em;
         }
         /* 幅480px以上（横画面・タブレットなど）でタイトルをさらに大きく */
         @media (min-width: 480px) {
@@ -388,19 +388,19 @@
         }
         .pomodoro-ring-bg {
             fill: none;
-            stroke: rgba(212, 165, 116, 0.12);
+            stroke: rgba(139, 105, 63, 0.22);
             stroke-width: 8;
         }
         .pomodoro-ring-fill {
             fill: none;
-            stroke: #d4a574;
+            stroke: #b8956a;
             stroke-width: 8;
             stroke-linecap: round;
             transition: stroke-dashoffset 0.5s linear;
         }
-        /* カフェラテを想起する色：集中時=ラテブラウン、休憩時=クリーム */
-        .pomodoro-card.work-phase .pomodoro-ring-fill { stroke: #c4956a; }
-        .pomodoro-card.break-phase .pomodoro-ring-fill { stroke: #e8c9a0; }
+        /* カフェラテを想起する色（やや濃いめ）：集中時=ラテブラウン、休憩時=クリーム */
+        .pomodoro-card.work-phase .pomodoro-ring-fill { stroke: #9a7045; }
+        .pomodoro-card.break-phase .pomodoro-ring-fill { stroke: #c9a87a; }
 
         .below-timer-link {
             margin-top: 1rem;
